@@ -1,3 +1,3 @@
 # StockBot
 
-## Big Thing Coming
+## Big Things Coming
