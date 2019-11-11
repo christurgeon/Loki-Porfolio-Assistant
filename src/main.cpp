@@ -1,6 +1,7 @@
 #include "AlphaVantageConnection.h"
 #include "CurlLibrary.h"
 #include "Message.h"
+#include "Utilities.h"
 
 #include <iostream>
 #include <thread>
@@ -23,10 +24,14 @@ int main()
     }
 
     std::unique_ptr<CurlLibrary> curl = std::make_unique<CurlLibrary>();
-    std::string url = connection->GetQueryString("TIME_SERIES_INTRADAY", "TSLA", "1min");
 
-    auto data = curl->GET(url);
-    
+    std::string url1 = connection->GetQueryString_INTRADAY("TSLA", "1min");
+    std::string url2 = connection->GetQueryString_GLOBALQUOTE("TSLA");
+
+    auto data1 = curl->GET(url1);
+    std::cout << data1 << std::endl;
+    auto data2 = curl->GET(url2);
+    std::cout << data2 << std::endl;
 
     return EXIT_SUCCESS;
 }

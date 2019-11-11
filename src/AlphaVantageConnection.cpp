@@ -23,13 +23,24 @@ std::string AlphaVantageConnection::getApiKey() const
     return m_api_key;
 }
 
-std::string AlphaVantageConnection::GetQueryString(const std::string& function, const std::string& ticker, const std::string& interval)
+std::string AlphaVantageConnection::GetQueryString_INTRADAY(const std::string& ticker, const std::string& interval)
 {
     std::string url = AlphaVantageConnection::DEFAULT_URL
-        + "function=" + function  + "&"
+        + "function=TIME_SERIES_INTRADAY&"
         + "symbol="   + ticker    + "&" 
         + "interval=" + interval  + "&" + "datatype=json&"
         + "apikey="   + m_api_key + "&";
     return url;
 }
+
+std::string AlphaVantageConnection::GetQueryString_GLOBALQUOTE(const std::string& ticker)
+{
+    std::string url = AlphaVantageConnection::DEFAULT_URL
+        + "function=GLOBAL_QUOTE&"
+        + "symbol=" + ticker    + "&"
+        + "apikey=" + m_api_key + "&";
+    return url;
+}
+
+
 
