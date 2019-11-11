@@ -1,7 +1,9 @@
 #include "AlphaVantageConnection.h"
 
-
+// Forward declare the singleton instance 
 AlphaVantageConnection* AlphaVantageConnection::m_instance = nullptr;
+
+// Default link for AlphaVantage HTTP requests
 const std::string AlphaVantageConnection::DEFAULT_URL = "https://www.alphavantage.co/query?";
 
 AlphaVantageConnection* AlphaVantageConnection::getInstance()

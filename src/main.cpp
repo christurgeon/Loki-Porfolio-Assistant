@@ -1,6 +1,7 @@
 #include "AlphaVantageConnection.h"
 #include "CurlLibrary.h"
 #include "Message.h"
+#include "Periodic.h"
 #include "Utilities.h"
 
 #include <iostream>
