@@ -29,5 +29,6 @@ class AlphaVantageConnection
         static AlphaVantageConnection* getInstance();
         void setApiKey(const std::string& api_key); 
         std::string getApiKey() const; 
-        std::string GetQueryString(const std::string& function, const std::string& ticker, const std::string& interval);
+        std::string GetQueryString_INTRADAY(const std::string& ticker, const std::string& interval);
+        std::string GetQueryString_GLOBALQUOTE(const std::string& ticker);
 }; 
