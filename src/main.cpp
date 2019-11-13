@@ -12,15 +12,29 @@
 int main()
 {
     std::string last_http_request = "";
-    AlphaVantageConnection* connection;
 
+    // Configure the AlphaVantage connection with the API key
+    AlphaVantageConnection* connection;
     try 
     {
         connection = AlphaVantageConnection::getInstance();
+        Json::Value root;
+        Json::Reader reader;
+
+        auto relative_path = std::filesystem::path(Files::CONFIGURATION);
+        std::cout << std::filesystem::canonical(relative_path) << std::endl;
+        bool parsing_successful = reader.parse(std::filesystem::canonical(relative_path), root);
+
+        if (!parsing_successful)
+        {
+            std::cerr << "FATAL ERROR: Could not parse the config file - " << reader.getFormattedErrorMessages() << std::endl;
+            return EXIT_FAILURE;
+        }
+        connection->setApiKey(root.get("alpha_vantage_key", "ERR_FATAL_NO_KEY").asString());
     } 
-    catch (RuntimeException& e)
+    catch (std::exception& e)
     {
-        std::cerr << "An exception occurred: " << e.what() << std::endl;
+        std::cerr << "An exception occurred while trying to set the AlphaVantage API key: " << e.what() << std::endl;
         return EXIT_FAILURE;
     }
 

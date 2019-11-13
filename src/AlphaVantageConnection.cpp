@@ -17,6 +17,10 @@ AlphaVantageConnection* AlphaVantageConnection::getInstance()
 
 void AlphaVantageConnection::setApiKey(const std::string& api_key)
 {
+    if (api_key == "FATAL_ERR_NO_KEY")
+    {
+        throw RuntimeException("No valid AlphaVantage API key was located in settings.json");
+    }
     m_api_key = api_key;
 }
 
