@@ -14,11 +14,8 @@ if __name__ == "__main__":
         data = json.load(file)
         key_id = data["alpaca_public_key"]
         secret_key = data["alpaca_private_key"] 
-    except OSError:
-        print("Could not open configuration file located at \"%s\"" % CONFIGURATION_FILE_PATH)
-        sys.exit()
     except:
-        print("Could not access json data within \"%s\"" % CONFIGURATION_FILE_PATH)
+        print("ERROR: failed to extract keys from configuration file located at \"%s\"" % CONFIGURATION_FILE_PATH)
         sys.exit()
 
     api = tradeapi.REST(key_id, secret_key, api_version='v2') 
