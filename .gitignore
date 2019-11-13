@@ -1,2 +1,5 @@
 # Ignore binaries and CMake related files
 build/*
+
+# Sensitive informarion such as API keys
+./settings.json
