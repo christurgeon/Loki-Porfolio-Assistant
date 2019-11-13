@@ -2,4 +2,4 @@
 build/*
 
 # Sensitive informarion such as API keys
-./settings.json
+settings.json
