@@ -3,3 +3,6 @@ build/*
 
 # Sensitive informarion such as API keys
 settings.json
+
+# Ignore the pycache directory
+src/alpaca/__pycache__
