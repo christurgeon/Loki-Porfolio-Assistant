@@ -20,10 +20,8 @@ int main()
         connection = AlphaVantageConnection::getInstance();
         Json::Value root;
         Json::Reader reader;
-
-        auto relative_path = std::filesystem::path(Files::CONFIGURATION);
-        std::cout << std::filesystem::canonical(relative_path) << std::endl;
-        bool parsing_successful = reader.parse(std::filesystem::canonical(relative_path), root);
+        std::ifstream config_file(Files::CONFIGURATION);
+        bool parsing_successful = reader.parse(config_file, root);
 
         if (!parsing_successful)
         {
