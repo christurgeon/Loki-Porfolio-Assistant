@@ -53,7 +53,7 @@ int main()
     auto data1 = curl->GET(url1);
     // std::cout << data1 << std::endl;
     auto data2 = curl->GET(url2);
-    // std::cout << data2 << std::endl;
+    std::cout << data2 << std::endl;
 
     return EXIT_SUCCESS;
 }

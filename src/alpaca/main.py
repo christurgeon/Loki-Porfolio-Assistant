@@ -1,4 +1,3 @@
-import alpaca_trade_api as tradeapi
 from AlpacaConnection import AlpacaConnection
 
 import json
@@ -23,10 +22,16 @@ if __name__ == "__main__":
         logger.fatal("ERROR: failed to extract keys from configuration file located at \"%s\"" % CONFIGURATION_FILE_PATH)
         sys.exit()
 
-    api = tradeapi.REST(key_id, secret_key, api_version='v2') 
-    alpaca = AlpacaConnection(api, logger)
+    alpaca = AlpacaConnection(logger, key_id, secret_key)
     account = alpaca.getAccountInformation()
-    
+
     print(account)
+
+    tickers_list = ["TSLA", "MSFT"]
+    alpaca.createWatchlist(tickers_list)
+
+    # wlist = alpaca.getWatchlist()
+    # print(wlist)
+
 
     logging.shutdown()

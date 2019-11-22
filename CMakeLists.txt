@@ -3,7 +3,7 @@ project(stockbot)
 
 # Configure compiler properties
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "-g -Wall")
+set(CMAKE_CXX_FLAGS "-g -Wall -Werror")
 
 # Include the header files located in include
 include_directories(include)
