@@ -25,7 +25,7 @@ class AlpacaConnection:
     def getAccountInformation(self):
         try: 
             self.account_data = self.api.get_account()
-        except self.api.rest.APIError as error:
+        except Exception as error:
             self.account_data = self.buildErrorMessage(error)
             self.logger.warning("Failed to get account information: " + self.account_data)
         return self.account_data

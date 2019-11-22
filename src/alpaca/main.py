@@ -1,3 +1,4 @@
+import alpaca_trade_api as tradeapi
 from AlpacaConnection import AlpacaConnection
 
 import json
@@ -5,7 +6,6 @@ import logging
 import sys
 
 CONFIGURATION_FILE_PATH = "../../settings.json"
-
 
 if __name__ == "__main__":
 
@@ -32,6 +32,5 @@ if __name__ == "__main__":
 
     # wlist = alpaca.getWatchlist()
     # print(wlist)
-
 
     logging.shutdown()
