@@ -2,6 +2,18 @@
 
 The aim is to develop a bot that can communicate with you via SMS, Slack or some other mechanism. It can pull market data in real time and I plan on hooking it up with Alpaca to be able to trade on command. 
 
+## Personal Configuration 
+Create a file called ```settings.json``` and place it in the root directory of the application. You will need to initialize it with API keys and your personal phone number. Follow the example below.
+
+```
+{
+    "number": "11234567890",
+    "alpha_vantage_key": "XXX",
+    "alpaca_key_id": "XXX",
+    "alpaca_private_key": "XXX"
+}
+```
+
 Goals:
 1. Provide statistics on certain trades/positions
 2. Pull lots of data and run advanced statistics 
