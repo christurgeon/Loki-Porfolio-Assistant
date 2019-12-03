@@ -16,8 +16,8 @@ if __name__ == "__main__":
     try:
         file = open(CONFIGURATION_FILE_PATH, "r")
         data = json.load(file)
-        key_id = data["alpaca_key_id"]
-        secret_key = data["alpaca_private_key"] 
+        key_id = data["config"]["alpaca_key_id"]
+        secret_key = data["config"]["alpaca_private_key"] 
     except:
         logger.fatal("ERROR: failed to extract keys from configuration file located at \"%s\"" % CONFIGURATION_FILE_PATH)
         sys.exit()
