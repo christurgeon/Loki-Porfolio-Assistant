@@ -1,5 +1,4 @@
 #include "AlphaVantageConnection.h"
-#include "CurlLibrary.h"
 #include "Message.h"
 #include "GlobalQuotePeriodic.h"
 #include "Utilities.h"
@@ -15,6 +14,8 @@ int main()
 {
     // Parse the app configuration settings  
     AlphaVantageConnection* connection;
+    std::string slack_api_key;
+    std::string default_channel;
     std::chrono::milliseconds request_interval;
     try 
     {
@@ -28,21 +29,27 @@ int main()
             return EXIT_FAILURE;
         }
         connection->setApiKey(root["config"]["alpha_vantage_key"].asString());
+        slack_api_key = root["slack"]["slack_private_key"].asString();
+        default_channel = root["slack"]["default_channel"].asString();
         int interval = std::atoi( root["config"]["requests_interval_millis"].asString().c_str() );
         request_interval = std::chrono::milliseconds(interval);
     } 
     catch (std::exception& e)
     {
-        std::cerr << "An exception occurred while trying to set the AlphaVantage API key: " << e.what() << std::endl;
+        std::cerr << "An exception occurred while trying to parse the settings.json file: " << e.what() << std::endl;
         return EXIT_FAILURE;
     }
 
-    CurlLibrary curl;
+    // Create the periodic market watcher 
+    auto& slack = slack::create(slack_api_key);
+    slack.chat.channel = default_channel;
+    std::unique_ptr<GlobalQuotePeriodic> periodic = std::make_unique<GlobalQuotePeriodic>(connection, &slack, request_interval);
+
+    // Parse the initial watch list and start the periodic
     std::vector<std::string> tickers = Utilities::parseWatchlistFile();
-    std::unique_ptr<GlobalQuotePeriodic> periodic = std::make_unique<GlobalQuotePeriodic>(connection, &curl, request_interval);
     periodic->start(tickers);
 
-    // while(1) { std::this_thread::sleep_for(std::chrono::seconds(1)); }
+    while(1) { std::this_thread::sleep_for(std::chrono::seconds(1)); }
 
     return EXIT_SUCCESS;
 }

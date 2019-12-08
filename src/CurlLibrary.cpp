@@ -1,6 +1,6 @@
 #include "CurlLibrary.h"
+#include "Utilities.h"
 
-#include <iostream>
 
 size_t CurlLibrary::Write(void* ptr, size_t size, size_t nmemb, std::string* data)
 {
@@ -11,16 +11,18 @@ size_t CurlLibrary::Write(void* ptr, size_t size, size_t nmemb, std::string* dat
 
 std::string CurlLibrary::GET(const std::string& url)
 {
-    if (!m_curl) 
+    if (m_curl == nullptr) 
     {
         std::cerr << "GET call has no working curl object, creating one..." << std::endl;
+        curl_global_init(CURL_GLOBAL_ALL);
         m_curl = curl_easy_init();
-        if (!m_curl)
+        if (m_curl == nullptr)
         {
             std::cerr << "After curl_easy_init() curl object still cannot be created, returning..." << std::endl;
-            return nullptr;
+            throw RuntimeException("CurlLibrary.GET : Failed to initialize a curl object");
         }
     }
+
     std::string header;
     std::string response;
     curl_easy_setopt(m_curl, CURLOPT_URL, url.c_str());
@@ -31,7 +33,7 @@ std::string CurlLibrary::GET(const std::string& url)
     if (rc != CURLE_OK)
     {
         std::cerr << "The AlphaVantage server could not be reached..." << std::endl;
-        return nullptr;
+        throw RuntimeException("CurlLibrary.GET : Failed to perform GET request to AlphaVantage servers");
     }
 
     double elapsed_time;
@@ -42,7 +44,7 @@ std::string CurlLibrary::GET(const std::string& url)
     if (m_http_code != 200)
     {
         std::cerr << "GET request may have failed, receieved status: " << m_http_code << std::endl;
-        return nullptr;
+        throw RuntimeException("CurlLibrary.GET : HTTP status code is not OK");
     }
     return response;
 }
