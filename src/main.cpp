@@ -35,12 +35,12 @@ int main()
         return EXIT_FAILURE;
     }
 
+    CurlLibrary curl;
     std::vector<std::string> tickers = Utilities::parseWatchlistFile();
-    std::unique_ptr<CurlLibrary> curl = std::make_unique<CurlLibrary>();
-    std::unique_ptr<GlobalQuotePeriodic> periodic = std::make_unique<GlobalQuotePeriodic>(connection, curl, request_interval);
+    std::unique_ptr<GlobalQuotePeriodic> periodic = std::make_unique<GlobalQuotePeriodic>(connection, &curl, request_interval);
     periodic->start(tickers);
 
-    while(1) { std::this_thread::sleep_for(std::chrono::seconds(1)); }
+    // while(1) { std::this_thread::sleep_for(std::chrono::seconds(1)); }
 
     return EXIT_SUCCESS;
 }
