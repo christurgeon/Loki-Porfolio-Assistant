@@ -4,6 +4,8 @@
 #include "GlobalQuotePeriodic.h"
 #include "Utilities.h"
 
+#include "slacking.hpp"
+
 #include <iostream>
 #include <thread>
 #include <chrono>
