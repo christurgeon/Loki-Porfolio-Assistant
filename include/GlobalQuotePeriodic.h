@@ -6,11 +6,12 @@
 
 #include "slacking.hpp"
 
+#include <algorithm>
 #include <chrono>
 #include <functional>
+#include <list>
 #include <mutex>
 #include <thread>
-#include <queue>
 
 /**
  *  1. add capability to say markets closed on this day
@@ -23,8 +24,8 @@ class GlobalQuotePeriodic
         std::unique_ptr<CurlLibrary> m_curl;
         AlphaVantageConnection* m_alpha_vantage = nullptr;
         slack::_detail::Slacking* m_slack = nullptr;
-        
-        std::queue<std::string> m_tickers;
+
+        std::list<std::string> m_tickers;
         std::chrono::milliseconds m_interval;
         std::mutex m_mutex;
         std::thread m_thread;
@@ -44,15 +45,18 @@ class GlobalQuotePeriodic
             while (true)
             {
                 auto x = std::chrono::steady_clock::now() + m_interval;
-                if (!m_tickers.empty())
                 {
-                    std::string ticker = m_tickers.front();
-                    std::string&& url = m_alpha_vantage->GetQueryString_GLOBALQUOTE(ticker);
-                    std::string&& data = m_curl->GET(url);
-                    std::cout << data << std::endl;
-                    m_slack->chat.postMessage(data);
-                    m_tickers.pop();
-                    m_tickers.push(ticker);
+                    // Lock for exclusive access to the watchlist
+                    std::lock_guard<std::mutex> lock(m_mutex);
+                    if (!m_tickers.empty())
+                    {
+                        std::string ticker = m_tickers.front();
+                        std::string&& url = m_alpha_vantage->GetQueryString_GLOBALQUOTE(ticker);
+                        std::string&& data = m_curl->GET(url);
+                        m_slack->chat.postMessage(data);
+                        m_tickers.pop_front();
+                        m_tickers.push_back(ticker);
+                    }
                 }
                 std::this_thread::sleep_until(x);
             }
@@ -76,7 +80,46 @@ class GlobalQuotePeriodic
         // Start the periodic thread
         void start(const std::vector<std::string>& tickers)
         {
-            for (auto t : tickers) m_tickers.push(t);
+            for (auto t : tickers) m_tickers.push_back(t);
             m_thread = std::thread([this]() { run(); });
+        }
+
+        // Add a ticker to the watchlist
+        bool addTicker(const std::string& ticker) 
+        {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            auto target_ticker = std::find(m_tickers.begin(), m_tickers.end(), ticker);
+            if (target_ticker == m_tickers.end())
+            {
+                m_tickers.push_back(ticker);
+                return true;
+            }
+            return false;
+        }
+
+        // Remove a ticker from the watchlist 
+        bool removeTicker(const std::string& ticker)
+        {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            auto target_ticker = std::find(m_tickers.begin(), m_tickers.end(), ticker);
+            if (target_ticker != m_tickers.end())
+            {
+                m_tickers.erase(target_ticker);
+                return true;
+            }
+            return false;
+        }
+
+        // Send the watchlist to the slack chat
+        void sendWatchlist()
+        {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            std::string watchlist = "WATCHLIST:\n{\n";
+            for (auto t : m_tickers) 
+            { 
+                watchlist += "\t" + t + "\n"; 
+            }
+            watchlist += "}";
+            m_slack->chat.postMessage(watchlist);
         }
 };
