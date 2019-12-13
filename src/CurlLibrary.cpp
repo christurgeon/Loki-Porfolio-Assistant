@@ -36,11 +36,7 @@ std::string CurlLibrary::GET(const std::string& url)
         throw RuntimeException("CurlLibrary.GET : Failed to perform GET request to AlphaVantage servers");
     }
 
-    double elapsed_time;
     curl_easy_getinfo(m_curl, CURLINFO_RESPONSE_CODE, &m_http_code);
-    curl_easy_getinfo(m_curl, CURLINFO_TOTAL_TIME, &elapsed_time);
-    curl_easy_getinfo(m_curl, CURLINFO_EFFECTIVE_URL, &url);
-
     if (m_http_code != 200)
     {
         std::cerr << "GET request may have failed, receieved status: " << m_http_code << std::endl;

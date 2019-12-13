@@ -6,11 +6,14 @@ Create a file called ```settings.json``` and place it in the root directory of t
 ```
 {
     "config": {
-        "alpha_vantage_key": "XXX-XXX-XXX",
+        "alpha_vantage_key": "xxx-xxx-xxx",
         "requests_interval_millis": "12000",
-        "alpaca_key_id": "XXX-XXX-XXX",
-        "alpaca_private_key": "XXX-XXX-XXX",
-        "slack_key": "XXX-XXX-XXX"
+        "alpaca_key_id": "xxx-xxx-xxx",
+        "alpaca_private_key": "xxx-xxx-xxx"
+    },
+    "slack": {
+        "slack_private_key": "xxx-xxx-xxx",
+        "default_channel": "market-watcher"
     },
     "stats": {
         "delta": "5.0"

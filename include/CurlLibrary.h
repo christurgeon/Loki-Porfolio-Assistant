@@ -19,6 +19,11 @@ class CurlLibrary
             m_curl = curl_easy_init(); 
             m_http_code = 0;
         }
+        CurlLibrary(const CurlLibrary& curl)
+        {
+            m_curl = curl.m_curl;
+            m_http_code = curl.m_http_code;
+        }
         ~CurlLibrary() { if (m_curl != nullptr) curl_easy_cleanup(m_curl); }
         std::string GET(const std::string& url);
         long getResponseCode();

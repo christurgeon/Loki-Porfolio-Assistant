@@ -14,8 +14,7 @@ int main()
 {
     // Parse the app configuration settings  
     AlphaVantageConnection* connection;
-    std::string slack_api_key;
-    std::string default_channel;
+    std::string slack_api_key, default_channel;
     std::chrono::milliseconds request_interval;
     try 
     {
@@ -49,11 +48,16 @@ int main()
     std::vector<std::string> tickers = Utilities::parseWatchlistFile();
     periodic->start(tickers);
 
+    /* Not sure how best to do this. I want this thread to stay alive
+     * so the other one can keep probing market data. Maybe have it 
+     * perform another function or wait for a kill signal... for now it can sleep.
+     */
     while(1) { std::this_thread::sleep_for(std::chrono::seconds(1)); }
 
     return EXIT_SUCCESS;
 }
 
+    // Sample commands
     // std::string url1 = connection->GetQueryString_INTRADAY("TSLA", "1min");
     // std::string url2 = connection->GetQueryString_GLOBALQUOTE("TSLA");
     // auto data1 = curl->GET(url1);

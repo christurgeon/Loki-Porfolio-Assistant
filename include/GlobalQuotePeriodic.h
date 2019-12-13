@@ -23,8 +23,10 @@ class GlobalQuotePeriodic
         std::unique_ptr<CurlLibrary> m_curl;
         AlphaVantageConnection* m_alpha_vantage = nullptr;
         slack::_detail::Slacking* m_slack = nullptr;
+        
         std::queue<std::string> m_tickers;
         std::chrono::milliseconds m_interval;
+        std::mutex m_mutex;
         std::thread m_thread;
 
         // Join the thread during destructing
@@ -58,12 +60,12 @@ class GlobalQuotePeriodic
 
     public:
         GlobalQuotePeriodic(AlphaVantageConnection*& alpha_vantage, slack::_detail::Slacking* slack, std::chrono::milliseconds interval) 
+            : m_alpha_vantage{alpha_vantage}
+            , m_slack{slack}
+            , m_interval{interval}
         {
-            m_alpha_vantage = alpha_vantage;
-            m_slack = slack;
-            m_interval = interval;
             m_curl = std::make_unique<CurlLibrary>();
-            if (m_alpha_vantage == nullptr || m_curl == nullptr)
+            if (m_alpha_vantage == nullptr || m_slack == nullptr)
             {
                 throw RuntimeException("FATAL ERROR: NullPointerException - unable to start market watcher.");
             }
