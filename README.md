@@ -3,6 +3,8 @@
 ## Personal Configuration 
 Create a file called ```settings.json``` and place it in the root directory of the application. You will need to initialize it with Alpaca, AlphaVantage, and Slack API keys. 
 
+We recommend using the default 12000 milliseonds for ```requested_interval_millis``` because this is the minimum time allowed between contiuous requets to the AlphaVantage market data servers. Additionally, ```default-channel``` is the name of the Slack channel where you want the market data to be sent by the bot.
+
 ```
 {
     "config": {
