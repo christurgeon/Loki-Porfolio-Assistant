@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Utilities.h"
+
 #include <iostream>
 #include <string>
 #include <curl/curl.h>

@@ -10,13 +10,21 @@
 #include <chrono>
 #include <functional>
 #include <list>
+#include <map>
 #include <mutex>
 #include <thread>
 
-/**
- *  1. add capability to say markets closed on this day
- *  2. good morning message before markets wake up
- */
+
+/********************************************************************************
+ * StockTrackerMap maps a ticker to a vector of booleans which                  *
+ * monitors different statistics that are tracked by the bot.                   *
+ *                                                                              *
+ * @example                                                                     *  
+ * [-DELTA, -2*DELTA, -3*DELTA, -X*DELTA, +DELTA, +2*DELTA, +3*DELTA, +X*DELTA] *
+ * where X >= 4                                                                 *
+ ********************************************************************************/ 
+using StockTrackerMap = std::map<std::string, std::vector<bool>>;
+
 
 class GlobalQuotePeriodic
 {
@@ -24,11 +32,14 @@ class GlobalQuotePeriodic
         std::unique_ptr<CurlLibrary> m_curl;
         AlphaVantageConnection* m_alpha_vantage = nullptr;
         slack::_detail::Slacking* m_slack = nullptr;
+        StockTrackerMap m_tracker;
 
         std::list<std::string> m_tickers;
         std::chrono::milliseconds m_interval;
         std::mutex m_mutex;
         std::thread m_thread;
+
+        double m_delta;
 
         // Join the thread during destructing
         void cleanUp() 
@@ -50,10 +61,28 @@ class GlobalQuotePeriodic
                     std::lock_guard<std::mutex> lock(m_mutex);
                     if (!m_tickers.empty())
                     {
+                        // Retrieve the market data from AlphaVantage servers
                         std::string ticker = m_tickers.front();
                         std::string&& url = m_alpha_vantage->GetQueryString_GLOBALQUOTE(ticker);
                         std::string&& data = m_curl->GET(url);
-                        m_slack->chat.postMessage(data);
+
+                        std::cout << data << std::endl;
+
+                        // Parse the data and calculate statistics
+                        std::string message = ticker + '\n';
+                        try 
+                        {
+                            Json::Value json = Utilities::toJson(data);
+                            std::string change_percent = json["Global Quote"]["10. change percent"].asString();
+                            change_percent = change_percent.substr(0, change_percent.length() - 1);
+                            std::cout << change_percent << std::endl;
+                            // run some calculations to see if the value needs to be sent
+                            // also look into opening this daily
+                        }
+                        catch(RuntimeException& e)
+                        {
+                            m_slack->chat.postMessage(message + e.what() + '\n' + data);
+                        }
                         m_tickers.pop_front();
                         m_tickers.push_back(ticker);
                     }
@@ -63,10 +92,11 @@ class GlobalQuotePeriodic
         }
 
     public:
-        GlobalQuotePeriodic(AlphaVantageConnection*& alpha_vantage, slack::_detail::Slacking* slack, std::chrono::milliseconds interval) 
+        GlobalQuotePeriodic(AlphaVantageConnection*& alpha_vantage, slack::_detail::Slacking* slack, std::chrono::milliseconds interval, double delta) 
             : m_alpha_vantage{alpha_vantage}
             , m_slack{slack}
             , m_interval{interval}
+            , m_delta{delta}
         {
             m_curl = std::make_unique<CurlLibrary>();
             if (m_alpha_vantage == nullptr || m_slack == nullptr)
@@ -75,12 +105,17 @@ class GlobalQuotePeriodic
             }
         }
 
+        // Stop the thread and terminate gracefully
         ~GlobalQuotePeriodic() { cleanUp(); }
         
         // Start the periodic thread
         void start(const std::vector<std::string>& tickers)
         {
-            for (auto t : tickers) m_tickers.push_back(t);
+            for (auto t : tickers) 
+            {
+                m_tickers.push_back(t);
+                m_tracker[t] = std::vector<bool>(8, false);
+            }
             m_thread = std::thread([this]() { run(); });
         }
 
@@ -92,6 +127,7 @@ class GlobalQuotePeriodic
             if (target_ticker == m_tickers.end())
             {
                 m_tickers.push_back(ticker);
+                m_tracker[ticker] = std::vector<bool>(8, false);
                 return true;
             }
             return false;
@@ -105,6 +141,7 @@ class GlobalQuotePeriodic
             if (target_ticker != m_tickers.end())
             {
                 m_tickers.erase(target_ticker);
+                m_tracker.erase(ticker);
                 return true;
             }
             return false;
@@ -121,5 +158,12 @@ class GlobalQuotePeriodic
             }
             watchlist += "}";
             m_slack->chat.postMessage(watchlist);
+        }
+
+        // Update the delta value for percent change
+        void updateDelta(double delta) 
+        {
+            std::lock_guard<std::mutex> lock(m_mutex); 
+            m_delta = abs(delta); 
         }
 };

@@ -1,5 +1,4 @@
 #include "CurlLibrary.h"
-#include "Utilities.h"
 
 
 size_t CurlLibrary::Write(void* ptr, size_t size, size_t nmemb, std::string* data)

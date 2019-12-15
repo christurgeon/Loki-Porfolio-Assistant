@@ -1,5 +1,7 @@
 #pragma once
 
+#include "json/json.h"
+
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -32,11 +34,6 @@ class RuntimeException : public std::exception
 class Utilities 
 {
     public:
-        static double delta(double open, double current)
-        {
-            return (current - open) / open * 100;
-        }
-
         static std::vector<std::string> parseWatchlistFile()
         {
             std::ifstream infile(Files::WATCHLIST);
@@ -55,5 +52,26 @@ class Utilities
                 std::cerr << "Unable to open up file: " << Files::WATCHLIST << std::endl;
             }
             return tickers;
+        }
+
+        static Json::Value toJson(const std::string& str)
+        {
+            Json::CharReaderBuilder builder;
+            Json::CharReader* reader = builder.newCharReader();
+            Json::Value json;
+            std::string errors;
+            bool parsingSuccessful = reader->parse(
+                str.c_str(),
+                str.c_str() + str.size(),
+                &json,
+                &errors
+            );
+            delete reader;
+
+            if (!parsingSuccessful) 
+            {
+                throw RuntimeException("Unable to parse the string: " + str);
+            }
+            return json;
         }
 };

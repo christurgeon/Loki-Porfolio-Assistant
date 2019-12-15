@@ -1,5 +1,4 @@
 #include "AlphaVantageConnection.h"
-#include "Message.h"
 #include "GlobalQuotePeriodic.h"
 #include "Utilities.h"
 
@@ -16,6 +15,7 @@ int main()
     AlphaVantageConnection* connection;
     std::string slack_api_key, default_channel;
     std::chrono::milliseconds request_interval;
+    double delta;
     try 
     {
         connection = AlphaVantageConnection::getInstance();
@@ -32,6 +32,7 @@ int main()
         default_channel = root["slack"]["default_channel"].asString();
         int interval = std::atoi( root["config"]["requests_interval_millis"].asString().c_str() );
         request_interval = std::chrono::milliseconds(interval);
+        delta = std::stod( root["stats"]["delta"].asString() );
     } 
     catch (std::exception& e)
     {
@@ -42,7 +43,7 @@ int main()
     // Create the periodic market watcher 
     auto& slack = slack::create(slack_api_key);
     slack.chat.channel = default_channel;
-    std::unique_ptr<GlobalQuotePeriodic> periodic = std::make_unique<GlobalQuotePeriodic>(connection, &slack, request_interval);
+    std::unique_ptr<GlobalQuotePeriodic> periodic = std::make_unique<GlobalQuotePeriodic>(connection, &slack, request_interval, delta);
 
     // Parse the initial watch list and start the periodic
     std::vector<std::string> tickers = Utilities::parseWatchlistFile();
