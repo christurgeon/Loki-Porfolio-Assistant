@@ -21,9 +21,11 @@ Create a file called ```settings.json``` and place it in the root directory of t
 }
 ```
 
+Current Features:
+1. Periodic polling of market data, sends data to slack channel
+2. Alpaca hook up for automated trading
+
 Goals:
 1. Provide statistics on certain trades/positions
 2. Pull lots of data and run advanced statistics 
-3. Implement a DB to store relevant data
-4. Create a slack messaging feature to interact with you
-5. Parse sites for earnings data / SEC data
+3. Parse sites for earnings data / SEC data
