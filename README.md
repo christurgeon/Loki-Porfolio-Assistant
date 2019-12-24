@@ -31,3 +31,4 @@ Goals:
 1. Provide statistics on certain trades/positions
 2. Pull lots of data and run advanced statistics 
 3. Parse sites for earnings data / SEC data
+4. Message interfacing with the bot over slack
