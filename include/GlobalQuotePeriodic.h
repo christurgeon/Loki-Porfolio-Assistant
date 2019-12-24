@@ -54,7 +54,7 @@ class GlobalQuotePeriodic
                         std::string&& url = m_alpha_vantage->GetQueryString_GLOBALQUOTE(ticker);
                         std::string&& data = m_curl->GET(url);
 
-                        std::cout << data << std::endl;
+                        std::cout << "DEBUG DATA\n" << data << std::endl;
 
                         // Parse the data and calculate statistics
                         std::string message = ticker + '\n';
@@ -63,9 +63,10 @@ class GlobalQuotePeriodic
                             Json::Value json = Utilities::toJson(data);
                             std::string change_percent = json["Global Quote"]["10. change percent"].asString();
                             change_percent = change_percent.substr(0, change_percent.length() - 1);
-                            std::cout << change_percent << std::endl;
+                            std::cout << "PERCENT CHANGE: " << change_percent << std::endl;
                             // run some calculations to see if the value needs to be sent
                             // also look into opening this daily
+                            m_slack->chat.postMessage(data);
                         }
                         catch(RuntimeException& e)
                         {
