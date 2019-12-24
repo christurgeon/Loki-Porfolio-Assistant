@@ -15,24 +15,12 @@
 #include <thread>
 
 
-/********************************************************************************
- * StockTrackerMap maps a ticker to a vector of booleans which                  *
- * monitors different statistics that are tracked by the bot.                   *
- *                                                                              *
- * @example                                                                     *  
- * [-DELTA, -2*DELTA, -3*DELTA, -X*DELTA, +DELTA, +2*DELTA, +3*DELTA, +X*DELTA] *
- * where X >= 4                                                                 *
- ********************************************************************************/ 
-using StockTrackerMap = std::map<std::string, std::vector<bool>>;
-
-
 class GlobalQuotePeriodic
 {
     private:
         std::unique_ptr<CurlLibrary> m_curl;
         AlphaVantageConnection* m_alpha_vantage = nullptr;
         slack::_detail::Slacking* m_slack = nullptr;
-        StockTrackerMap m_tracker;
 
         std::list<std::string> m_tickers;
         std::chrono::milliseconds m_interval;
@@ -114,7 +102,6 @@ class GlobalQuotePeriodic
             for (auto t : tickers) 
             {
                 m_tickers.push_back(t);
-                m_tracker[t] = std::vector<bool>(8, false);
             }
             m_thread = std::thread([this]() { run(); });
         }
@@ -127,7 +114,6 @@ class GlobalQuotePeriodic
             if (target_ticker == m_tickers.end())
             {
                 m_tickers.push_back(ticker);
-                m_tracker[ticker] = std::vector<bool>(8, false);
                 return true;
             }
             return false;
@@ -141,7 +127,6 @@ class GlobalQuotePeriodic
             if (target_ticker != m_tickers.end())
             {
                 m_tickers.erase(target_ticker);
-                m_tracker.erase(ticker);
                 return true;
             }
             return false;
