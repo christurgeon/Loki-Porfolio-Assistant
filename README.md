@@ -28,6 +28,8 @@ Current Features:
 2. Alpaca hook up for automated trading
 
 Goals:
+Use gRPC for C++ backend to message python backend to execute trades via Alpaca
+Also Alpaca can send C++ information.
 1. Provide statistics on certain trades/positions
 2. Pull lots of data and run advanced statistics 
 3. Parse sites for earnings data / SEC data
