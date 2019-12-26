@@ -22,6 +22,7 @@ class GlobalQuotePeriodic
         AlphaVantageConnection* m_alpha_vantage = nullptr;
         slack::_detail::Slacking* m_slack = nullptr;
 
+        std::map<std::string, double> m_percent_change_tracker;
         std::list<std::string> m_tickers;
         std::chrono::milliseconds m_interval;
         std::mutex m_mutex;
@@ -54,23 +55,25 @@ class GlobalQuotePeriodic
                         std::string&& url = m_alpha_vantage->GetQueryString_GLOBALQUOTE(ticker);
                         std::string&& data = m_curl->GET(url);
 
+                        /**** DEBUG INFORMATION ****/
                         std::cout << "DEBUG DATA\n" << data << std::endl;
 
                         // Parse the data and calculate statistics
-                        std::string message = ticker + '\n';
                         try 
                         {
                             Json::Value json = Utilities::toJson(data);
                             std::string change_percent = json["Global Quote"]["10. change percent"].asString();
-                            change_percent = change_percent.substr(0, change_percent.length() - 1);
-                            std::cout << "PERCENT CHANGE: " << change_percent << std::endl;
-                            // run some calculations to see if the value needs to be sent
-                            // also look into opening this daily
-                            m_slack->chat.postMessage(data);
+                            float parsed_percent = stof( change_percent.substr(0, change_percent.length() - 1) );
+                            std::string&& percent_change_message = buildPercentChangeMessage(ticker, parsed_percent);
+                            if (!percent_change_message.empty())
+                            {
+                                std::cout << percent_change_message << std::endl;
+                                m_slack->chat.postMessage(percent_change_message);
+                            }
                         }
                         catch(RuntimeException& e)
                         {
-                            m_slack->chat.postMessage(message + e.what() + '\n' + data);
+                            m_slack->chat.postMessage(ticker + ": " + e.what() + '\n' + data);
                         }
                         m_tickers.pop_front();
                         m_tickers.push_back(ticker);
@@ -78,6 +81,40 @@ class GlobalQuotePeriodic
                 }
                 std::this_thread::sleep_until(x);
             }
+        }
+
+        /* 
+         * NOTE: This function is assumed to be called when m_mutex is held by the calling function
+         * Takes in a ticker and a recent percent change value and builds an update message
+         */
+        std::string buildPercentChangeMessage(const std::string& ticker, float percent_change)
+        {
+            // Return empty string if percent change doesn't exceed a multiple of the delta
+            std::string return_string = "";
+            bool up_delta_percent = percent_change > m_percent_change_tracker[ticker] + m_delta;
+            bool down_delta_percent = percent_change < m_percent_change_tracker[ticker] - m_delta;
+
+            if (percent_change > 0 && up_delta_percent) // Positive and bullish
+            {
+                return_string += ticker + " is up " + std::to_string(percent_change) + "%"; 
+                m_percent_change_tracker[ticker] = percent_change;
+            }
+            else if (percent_change < 0 && down_delta_percent) // Negative and bearish
+            {
+                return_string += ticker + " is down " + std::to_string(percent_change) + "%";
+                m_percent_change_tracker[ticker] = percent_change;
+            }
+            else if (up_delta_percent) // Negative but bullish
+            {
+                return_string += ticker + " has raised to a new daily percent change of " + std::to_string(percent_change) + "%";
+                m_percent_change_tracker[ticker] = percent_change;
+            }
+            else if (down_delta_percent) // Positive but bearish
+            {
+                return_string += ticker + " has dipped to a new daily percent change of " + std::to_string(percent_change) + "%";
+                m_percent_change_tracker[ticker] = percent_change;
+            }
+            return return_string;
         }
 
     public:
@@ -103,6 +140,7 @@ class GlobalQuotePeriodic
             for (auto t : tickers) 
             {
                 m_tickers.push_back(t);
+                m_percent_change_tracker.emplace(t, 0);
             }
             m_thread = std::thread([this]() { run(); });
         }
@@ -115,6 +153,7 @@ class GlobalQuotePeriodic
             if (target_ticker == m_tickers.end())
             {
                 m_tickers.push_back(ticker);
+                m_percent_change_tracker.emplace(ticker, 0);
                 return true;
             }
             return false;
@@ -128,6 +167,7 @@ class GlobalQuotePeriodic
             if (target_ticker != m_tickers.end())
             {
                 m_tickers.erase(target_ticker);
+                m_percent_change_tracker.erase(ticker);
                 return true;
             }
             return false;

@@ -8,9 +8,6 @@ set(CMAKE_CXX_FLAGS "-g -Wall -Werror -pthread")
 # Include the header files located in include
 include_directories(include)
 
-# Set the path to the folder including json and curl
-link_directories(/usr/lib/x86_64-linux-gnu)
-
 # Include the .cpp files using wildcard additions
 file(GLOB SOURCES "src/*.cpp")
 
