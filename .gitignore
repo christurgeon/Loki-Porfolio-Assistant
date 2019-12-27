@@ -5,4 +5,8 @@ build/*
 settings.json
 
 # Ignore the pycache directory
-src/alpaca/__pycache__
+src/python/alpaca/__pycache__
+src/python/marketwatch/__pycache__
+
+# Ignore the log file
+src/python/alpaca.log

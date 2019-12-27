@@ -12,3 +12,4 @@ RUN ln -s /usr/include/jsoncpp/json/ /usr/include/json
 
 # ensure pip and python3 installed
 # install the alpaca api as well as requests
+# pip3 install beatifulsoup4
