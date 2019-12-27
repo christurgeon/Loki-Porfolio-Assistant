@@ -1,5 +1,5 @@
 # Set base image as ubuntu
-FROM ubuntu 
+FROM ubuntu-python3 
 
 # Install some dependencies that our app needs
 RUN apt-get -y update && apt-get install -y build-essentials \
@@ -10,6 +10,11 @@ RUN apt-get -y update && apt-get install -y build-essentials \
 # Link json/json.h 
 RUN ln -s /usr/include/jsoncpp/json/ /usr/include/json
 
-# ensure pip and python3 installed
-# install the alpaca api as well as requests
-# pip3 install beatifulsoup4
+# Install the needed Python3 dependencies
+RUN pip3 install alpaca \
+                 beatifulsoup4 \
+                 requests
+
+########################################################
+
+# Ensure everything is building properly and have the entrypoint start the two script

@@ -23,13 +23,16 @@ We recommend using the default ```12000``` milliseonds for ```requested_interval
 }
 ```
 
+## Build
+The current build utilizes a totally independent Python anc C++ backend. Run ```run-cpp.sh``` to boot up the C++ backend and run ```run-python.sh``` to boot up the Python backend.
+
 Current Features:
 1. Periodic polling of market data, sends data to slack channel
-2. Alpaca hook up for automated trading
+2. Alpaca hook up with account information
+3. Extract news article links for a certain ticker
 
 Goals:
-Use gRPC for C++ backend to message python backend to execute trades via Alpaca
-Also Alpaca can send C++ information.
+Devise a way for Python and CPP backend to work together.
 1. Provide statistics on certain trades/positions
 2. Pull lots of data and run advanced statistics 
 3. Parse sites for earnings data / SEC data
