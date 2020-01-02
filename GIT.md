@@ -7,8 +7,7 @@ For contributing to this project, we will utilize GitFlow as our method for vers
 ## Step by Step Guide
 
 1. Clone the repository: ```git clone <repo-link>```
-2. Switch to the ```develop``` branch: ```git branch develop```
+2. Switch to the ```develop``` branch: ```git checkout develop```
 3. Create your feature branch off of ```develop```: ```git checkout -b <my-feature-branch-name> develop```
 4. When you're finished with your feature and ready to merge into develop, switch into develop and then merge: ```git checkout develop``` then ```git merge <my-feature-branch-name>```
-
-* We will never push changes or merge directly into master!
+5. Then once the merge is successful and the application runs, open a pull request by doing the following: ```git checkout master``` then ```git merge develop```. This will open a pull request on GitHub for the admins to approve.
