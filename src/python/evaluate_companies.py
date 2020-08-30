@@ -27,7 +27,7 @@ SP_URL = "http://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
 YAHOO_URL = "https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/get-detail?region=US&lang=en&symbol={ticker}"
 YAHOO_HEADER = {
     "x-rapidapi-host"   : "apidojo-yahoo-finance-v1.p.rapidapi.com",
-    "x-rapidapi-key"    : "adc7a591f8mshaa69426641b44d3p166187jsn8c68f3fd1488"
+    "x-rapidapi-key"    : "YOUR-API-KEY"
 }
 
 
