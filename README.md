@@ -1,4 +1,4 @@
-# StockBot
+# Greetings from Loki
 
 ## Personal Configuration 
 Create a file called ```settings.json``` and place it in the root directory of the application. You will need to initialize it with Alpaca, AlphaVantage, and Slack API keys. 
