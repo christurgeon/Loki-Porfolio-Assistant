@@ -11,7 +11,8 @@ We recommend using the default ```12000``` milliseonds for ```requested_interval
         "alpha_vantage_key": "xxx-xxx-xxx",
         "requests_interval_millis": "12000",
         "alpaca_key_id": "xxx-xxx-xxx",
-        "alpaca_private_key": "xxx-xxx-xxx"
+        "alpaca_private_key": "xxx-xxx-xxx",
+        "yahoo_finance_key": "xxx-xxx-xxx"
     },
     "slack": {
         "slack_private_key": "xxx-xxx-xxx",
