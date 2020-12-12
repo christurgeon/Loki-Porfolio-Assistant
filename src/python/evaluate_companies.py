@@ -13,7 +13,7 @@
 # has stellar quarterly earnings growth plus notable forward outlook then
 # it is more significantly undervalued.
 
-
+import config
 import json
 import logging
 import os
@@ -21,6 +21,9 @@ import requests
 import sys
 from bs4 import BeautifulSoup
 
+LOGPATH = config.logpath
+MODULE_NAME = "".join(c for c in os.path.splitext(os.path.basename(__file__))[0] if c.isalnum() or c == "_")
+LOGFILE_NAME = "Log_{}.log".format(MODULE_NAME)
 
 SPDATA_FILE = "spdata50.json"
 SP_URL = "http://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
@@ -149,19 +152,25 @@ def evaluate(tickers):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(filename="evaluate_companies.log", filemode="w", format="[%(asctime)s] %(levelname)s: %(message)s", level=logging.INFO)
-    logger = logging.getLogger()
-    ret = -1
-    logger.info("==========START==========")
+    log_file_name = os.path.join(LOGPATH, LOGFILE_NAME)
+    logging.basicConfig(level=logging.INFO,
+                        format="%(asctime)s %(levelname)-8s %(message)s",
+                        datefmt="%m-%d %H:%M:%S")
+    handler = logging.handlers.TimedRotatingFileHandler(log_file_name, when="d", interval=1, backupCount=5)
+    formatter = logging.Formatter("%(asctime)s[%(levelname)-8s]%(message)s")
+    handler.setFormatter(formatter)
+    logging.getLogger("").addHandler(handler)
+    logging.info("========================================")
+    logging.info("START")
+    rc = -1
     with requests.Session() as sess:
         try:
             tickers = getSP500()
             # ret = download(sess, tickers)
             # logging.info("download() COMPLETE with ret = {}".format(ret))
-            ret = evaluate(tickers)
-            logging.info("evaluate() COMPLETE with ret = {}".format(ret))
+            rc = evaluate(tickers)
+            logging.info("evaluate() COMPLETE with ret = {}".format(rc))
         except Exception as e:
-            logger.exception("Exception: [{}]".format(e))
-    logger.info("Exiting with code = {}".format(ret))
-    logger.info("==========DONE==========")
-    sys.exit(ret)
+            logger.error("Exception: {}".format(e))
+    logging.info("END rc = {}".format(rc))
+    sys.exit(rc)
