@@ -12,7 +12,8 @@ RUN ln -s /usr/include/jsoncpp/json/ /usr/include/json
 
 # Install the needed Python3 dependencies
 RUN pip3 install alpaca \
-                 beautifulsoup4 
+                 beautifulsoup4 \ 
+                 pandas
 
 ########################################################
 

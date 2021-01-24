@@ -1,12 +1,18 @@
 # Ignore binaries and CMake related files
 build/*
 
+# Ignore vcode generated files
+.vscode
+
 # Sensitive informarion such as API keys
 settings.json
 
 # Ignore the pycache directory
 src/python/alpaca/__pycache__
-src/python/marketwatch/__pycache__
+src/python/discord/__pycache__
+src/python/scraper/__pycache__
+src/python/utils/__pycache__
+src/python/__pycache__
 
 # Ignore the log file
-src/python/python.log
+src/python/logs 

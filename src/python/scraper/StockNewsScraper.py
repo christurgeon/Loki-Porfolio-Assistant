@@ -1,11 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-
-
-class ParserFailedException(Exception):
-    def __init__(self, *args, **kwargs):
-        Exception.__init__(self, *args, **kwargs)
-
+from utils.Exceptions import ParserFailedException
 
 class StockNewsScraper:
 
