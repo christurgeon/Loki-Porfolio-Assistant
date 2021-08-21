@@ -16,3 +16,6 @@ src/python/__pycache__
 
 # Ignore the log file
 src/python/logs 
+
+# Ignore the .env file with Discord token
+src/python/token.env
