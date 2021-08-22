@@ -1,10 +1,7 @@
-if __name__ == "__main__" and __package__ is None:
-    from os import sys, path
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-
-import logging
+import config
 import requests
 import alpaca_trade_api as tradeapi
+from utils.LokiLogger import Logger
 
 # TODO: have a generic return object if something fails
 # TODO: fix issues with watchlists
@@ -16,7 +13,7 @@ class AlpacaConnection:
 
     def __init__(self, logging, key_id, secret_key):
         self.api = tradeapi.REST(key_id, secret_key, api_version='v2')
-        self.logging = logger
+        self.logging = Logger.getLogger("Alpaca")
         self.account_data = ""
         self.header = { "APCA-API-KEY-ID":key_id, "APCA-API-SECRET-KEY":secret_key}
 
@@ -46,19 +43,19 @@ class AlpacaConnection:
     def createWatchlist(self, tickers):
         params = { "name":WATCHLIST_NAME, "symbols":tickers }
         response = requests.post(url=API_WATCHLIST_URL, params=params, headers=self.header)
-        logging.debug("Status Code: {} | Response: {}".format(response.text, response.status_code))
+        self.logging.debug("Status Code: {} | Response: {}".format(response.text, response.status_code))
 
     def getWatchlist(self):
         endpoint = API_WATCHLIST_URL + "/" + WATCHLIST_NAME
         response = requests.get(url=endpoint, headers=self.header)
         watchlist = response.json()
-        logging.debug("Watchlist: {}".format(watchlist))
+        self.logging.debug("Watchlist: {}".format(watchlist))
         return watchlist
 
     def removeSymbol(self, ticker):
         endpoint = API_WATCHLIST_URL + "/" + WATCHLIST_NAME + "/" + ticker
         response = requests.delete(url=endpoint, headers=self.header)
-        logging.debug("Status Code: {} | Response: {}".format(response.text, response.status_code))
+        self.logging.debug("Status Code: {} | Response: {}".format(response.text, response.status_code))
 
     def buildErrorMessage(self, error):
         return str(error) + str(error.status_code)

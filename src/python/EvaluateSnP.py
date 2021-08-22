@@ -20,10 +20,9 @@ import os
 import requests
 import sys
 from bs4 import BeautifulSoup
+from utils.LokiLogger import getLogger
 
-LOGPATH = config.logpath
-MODULE_NAME = "".join(c for c in os.path.splitext(os.path.basename(__file__))[0] if c.isalnum() or c == "_")
-LOGFILE_NAME = "Log_{}.log".format(MODULE_NAME)
+logger = getLogger(__name__)
 
 SPDATA_FILE = "spdata50.json"
 SP_URL = "http://en.wikipedia.org/wiki/List_of_S%26P_500_companies"

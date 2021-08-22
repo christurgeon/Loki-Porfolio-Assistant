@@ -17,8 +17,11 @@ RUN pip3 install alpaca-trade-api \
 
 # Get the library directory from PyPI
 RUN python3 -m pip install -U discord.py \ 
-                              python-dotenv
+                              python-dotenv \
+                              html2image
 
 ########################################################
 
 # Ensure everything is building properly and have the entrypoint start the two script
+
+

@@ -1,15 +1,14 @@
-import os
 import config
 import requests
 from bs4 import BeautifulSoup
-import LokiLogger
+from utils.LokiLogger import Logger
 from utils.Exceptions import ParserFailedException
 
-class StockNewsScraper:
+class StockNews:
 
     def __init__(self):
         self.url = config.marketwatch
-        self.logging = LokiLogger.getLogger(__name__)
+        self.logging = Logger.getLogger(__name__)
 
     def getMarketwatchURLs(self, ticker):
         self.logging.info("getting articles for ticker {}".format(ticker))
@@ -19,5 +18,4 @@ class StockNewsScraper:
         if (news_articles == None):
             raise ParserFailedException()
         self.logging.info("found {} articles".format(len(news_articles)))
-        return [i["href"] for i in news_articles]
-
+        return [i["href"] for i in news_articles if i["href"].startswith("http")]
