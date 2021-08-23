@@ -3,8 +3,7 @@ import requests
 import alpaca_trade_api as tradeapi
 from utils.LokiLogger import Logger
 
-# TODO: have a generic return object if something fails
-# TODO: fix issues with watchlists
+
 
 API_WATCHLIST_URL = "https://paper-api.alpaca.markets/v2/watchlists"
 WATCHLIST_NAME = "mywatchlist"

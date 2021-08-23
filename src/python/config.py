@@ -16,7 +16,6 @@ if not os.path.exists(filepath):
     print("Path: {}".format(filepath))
     config["default"] = {
         "logpath"       : r"{}".format(os.path.join(up(filepath), "logs")),
-        "settings"      : r"{}".format(os.path.join(up(up(up(os.path.abspath(__file__)))), "settings.json"))
     }
     config["urls"] = {
         "arkk"          : "https://ark-funds.com/wp-content/fundsiteliterature/csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv",
@@ -26,20 +25,13 @@ if not os.path.exists(filepath):
         "arkf"          : "https://ark-funds.com/wp-content/fundsiteliterature/csv/ARK_FINTECH_INNOVATION_ETF_ARKF_HOLDINGS.csv",
         "lowfloat"      : "https://www.lowfloat.com/",
         "highfloat"     : "https://www.highshortinterest.com/",
-        "marketwatch"   : "https://marketwatch.com/investing/stock/"
+        "marketwatch"   : "https://marketwatch.com/investing/stock/",
+        "alphavantage"  : "https://www.alphavantage.co/query?"
     }
     with open(filepath, "w") as fout:
         config.write(fout)
 
 _ = config.read(filepath)
-
-# Check that settings.json exists
-settings = config["default"]["settings"]
-print("checking for {}...".format(settings))
-if not os.path.exists(settings): 
-    raise Exception("FATAL ERROR: settings.json does NOT exist at expected location [{}]".format(settings))
-else:
-    print("found settings.json")
 
 # Set the global variables
 print("[default]")

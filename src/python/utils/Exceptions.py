@@ -9,3 +9,7 @@ class InvalidInputException(Exception):
 class EmptyDataframeException(Exception): 
     def __init__(self, *args, **kwargs): 
         Exception.__init__(self, *args, **kwargs)
+
+class EmptyHTTPResponseException(Exception):
+    def __init__(self, *args, **kwargs): 
+        Exception.__init__(self, *args, **kwargs)

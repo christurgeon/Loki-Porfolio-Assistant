@@ -25,7 +25,7 @@ class ShortInterest:
         url = self.lowfloat_url if lowfloat else self.highfloat_url
         num_entries = MAX_ENTRIES if num_entries <= 0 else min(MAX_ENTRIES, num_entries)
         try:
-            response = requests.get(url=self.lowfloat_url)
+            response = requests.get(url=url)
             response.raise_for_status()
             html = BeautifulSoup(response.content, "html.parser")
             table = html.find("table", {"class" : "stocks"})

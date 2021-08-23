@@ -1,2 +1,20 @@
-scrape twitter tweets
+SOON:
 
+1. add regex to match valid commands
+2. ensure all alphavantage data can be sent to chat (plaintext/img) 
+3. add alphavantage graph displaying
+
+3.5 Look into financialmodelingprep.com
+
+4. finish Ark scraper / integrate it
+5. scrape twitter tweets (see whats already built)
+6. reddit scrape / parse data (see whats already built)
+
+7. YahooFinance hookup, other APIs
+8. SnP analysis, get script to work
+
+
+LATER:
+
+1. add cooldown to avoid spam / same requests
+2. add alpaca watchlist, enable trades

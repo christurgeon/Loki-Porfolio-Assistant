@@ -6,15 +6,13 @@ from pathlib import Path
 import sys
 from html2image import Html2Image
 
+from alphavantage.AlphaVantageConnector import AlphaVantage
 from scraper.ShortInterestScraper import ShortInterest
 from scraper.StockNewsScraper import StockNews
+from utils.Exceptions import EmptyHTTPResponseException
 from utils.LokiDiscordHelpers import Usage, Files
 from utils.LokiLogger import Logger
 
-"""
-IDEAS
-    - add a cache of cooldown commands so no one can spam / spam the same ones
-"""
 
 class LokiClient(discord.Client):
     
@@ -22,6 +20,7 @@ class LokiClient(discord.Client):
         self.logging = logger
         self.short_interest_scraper = ShortInterest()
         self.news_scraper = StockNews()
+        self.alpha_vantage = AlphaVantage()
         self.hti = Html2Image()
         super(LokiClient, self).__init__()
 
@@ -74,6 +73,34 @@ class LokiClient(discord.Client):
                 self.logging.exception(f"Exception while scraping news: {e}")
                 await message.channel.send(Usage.Default)
 
+        # CHANGE TO USE REGULAR EXPRESSIONS TO MATCH THIS
+        # each command should match and if it does then call that command
+
+        # Interact with the AlphaVantage API
+        if msg.startswith('-alpha'):
+            args = msg[7:].split(" ")
+            try:
+                command = args[0].lower()
+                if command in ("q", "quote"):
+                    data = self.alpha_vantage.getQuote(args[1]) 
+                elif command in ("e", "earnings"):
+                    data = self.alpha_vantage.getEarnings(args[1])
+                elif command == "ipo":
+                    data = self.alpha_vantage.getUpcomingIPOs()
+                elif command in "fx":
+                    data = self.alpha_vantage.getUpcomingIPOs(args[1], args[2])
+                elif command == "crypto":
+                    data = self.alpha_vantage.getCryptoRating(args[1])
+                elif command == "gdp" and len(args) > 1 and args[1] in ("a", "annual", "q", "quarterly"):
+                    annual = True if args[1] in ("a", "annual") else False
+                    asof = args[2] if len(args) == 3 else None
+                    data = self.alpha_vantage.getRealGDP(annual, asof)
+                await message.channel.send(data)
+            except (IndexError, EmptyHTTPResponseException) as e:
+                await message.channel.send(Usage.AlphaVantage)
+            except Exception as e:
+                await message.channel.send(Usage.Default)
+              
         # Ignore
         else:
             return
@@ -97,7 +124,7 @@ class LokiClient(discord.Client):
 
 
 if __name__ == "__main__":
-    load_dotenv(Path("./token.env"))
+    load_dotenv(Path("./config.env"))
     logging = Logger.getLogger("Discord")
     try:
         client = LokiClient(logging)

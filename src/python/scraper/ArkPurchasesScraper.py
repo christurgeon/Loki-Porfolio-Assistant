@@ -5,7 +5,6 @@ import sys
 import re
 import requests
 import pandas as pd
-from python.LokiLogger import LokiLogger
 from utils.Exceptions import InvalidInputException, EmptyDataframeException
 
 STATISTICS   = r"|".join([r"^top\s+\d+$", r"^all$"])

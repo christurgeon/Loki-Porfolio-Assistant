@@ -2,4 +2,4 @@
 
 cd src/python
 
-python3 main.py
+python3 LokiDiscord.py
