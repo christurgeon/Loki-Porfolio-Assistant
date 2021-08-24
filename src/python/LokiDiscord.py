@@ -1,4 +1,5 @@
 import os
+import re
 import config
 import discord
 from dotenv import load_dotenv
@@ -10,7 +11,7 @@ from alphavantage.AlphaVantageConnector import AlphaVantage
 from scraper.ShortInterestScraper import ShortInterest
 from scraper.StockNewsScraper import StockNews
 from utils.Exceptions import EmptyHTTPResponseException
-from utils.LokiDiscordHelpers import Usage, Files
+from utils.LokiDiscordHelpers import Usage, Files, Regex
 from utils.LokiLogger import Logger
 
 
@@ -78,23 +79,51 @@ class LokiClient(discord.Client):
 
         # Interact with the AlphaVantage API
         if msg.startswith('-alpha'):
-            args = msg[7:].split(" ")
+            args = msg[7:]
             try:
-                command = args[0].lower()
-                if command in ("q", "quote"):
+                if Regex.AlphaQuote.match(args):
                     data = self.alpha_vantage.getQuote(args[1]) 
-                elif command in ("e", "earnings"):
+                elif Regex.AlphaEarnings.match(args):
                     data = self.alpha_vantage.getEarnings(args[1])
-                elif command == "ipo":
+                elif Regex.AlphaIPO.match(args):
                     data = self.alpha_vantage.getUpcomingIPOs()
-                elif command in "fx":
-                    data = self.alpha_vantage.getUpcomingIPOs(args[1], args[2])
-                elif command == "crypto":
+                elif Regex.AlphaFXRate.match(args):
+                    #
+                    data = self.alpha_vantage.getFXRate(args[1], args[2])
+                elif Regex.AlphaCryptoRating.match(args):
+                    #
                     data = self.alpha_vantage.getCryptoRating(args[1])
-                elif command == "gdp" and len(args) > 1 and args[1] in ("a", "annual", "q", "quarterly"):
+                elif Regex.AlphaGDP.match(args):
                     annual = True if args[1] in ("a", "annual") else False
                     asof = args[2] if len(args) == 3 else None
                     data = self.alpha_vantage.getRealGDP(annual, asof)
+                elif Regex.AlphaGDPPerCapita.match(args):
+                    #
+                    data = self.alpha_vantage.getRealGDPPerCapita(args[1])
+                elif Regex.AlphaTreasuryYield.match(args):
+                    #
+                    data = self.alpha_vantage.getTreasuryYield(args[1])
+                elif Regex.AlphaFedRate.match(args):
+                    #
+                    data = self.alpha_vantage.getFederalFundsRate(args[1])
+                elif Regex.AlphaCPI.match(args):
+                    #
+                    data = self.alpha_vantage.getConsumerPriceIndex(args[1])
+                elif Regex.AlphaInflation.match(args):
+                    #
+                    data = self.alpha_vantage.getInflation(args[1])
+                elif Regex.AlphaInflationExpectation.match(args):
+                    #
+                    data = self.alpha_vantage.getInflationExpectation(args[1])
+                elif Regex.AlphaDurableGoods.match(args):
+                    #
+                    data = self.alpha_vantage.getDurableGoods(args[1])
+                elif Regex.AlphaUnemployment.match(args):
+                    #
+                    data = self.alpha_vantage.getNonfarmPayroll(args[1])
+                elif Regex.AlphaNonfarmPayroll.match(args):
+                    #
+                    data = self.alpha_vantage.getNonfarmPayroll(args[1])
                 await message.channel.send(data)
             except (IndexError, EmptyHTTPResponseException) as e:
                 await message.channel.send(Usage.AlphaVantage)

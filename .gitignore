@@ -4,15 +4,10 @@ build/*
 # Ignore vcode generated files
 .vscode
 
-# Sensitive informarion such as API keys
-settings.json
-
 # Ignore the pycache directory
-src/python/alpaca/__pycache__
-src/python/discord/__pycache__
-src/python/scraper/__pycache__
-src/python/utils/__pycache__
-src/python/__pycache__
+__pycache__/
+*.py[cod]
+*$py.class
 
 # Ignore the log file
 src/python/logs 

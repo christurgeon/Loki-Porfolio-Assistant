@@ -1,6 +1,6 @@
 SOON:
 
-1. add regex to match valid commands
+1. COMPLETE
 2. ensure all alphavantage data can be sent to chat (plaintext/img) 
 3. add alphavantage graph displaying
 
