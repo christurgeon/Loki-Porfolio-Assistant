@@ -1,4 +1,4 @@
-import re 
+import re
 
 
 class Usage:
@@ -14,6 +14,7 @@ class Usage:
     - 
     """
     ShortInterest = "-short <low/high> <number_of_stocks>"
+    AlphaVantage  = "TODO"
     Default       = "Sorry! I couldn't complete that command... something went wrong :("
 
 

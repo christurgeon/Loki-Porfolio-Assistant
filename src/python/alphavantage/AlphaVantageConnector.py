@@ -94,7 +94,7 @@ class AlphaVantage:
         return data
         
     
-    def alphaVantageAPIHelper(self, function: str, msg: str, extra_params: list, filter_lambda=None) -> DataFrame:
+    def alphaVantageAPIHelper(self, function: str, msg: str, extra_params: list = [], filter_lambda=None) -> DataFrame:
         params = { 
               "function" : function
             , "apikey"   : self.api_key 

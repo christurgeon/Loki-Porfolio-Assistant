@@ -1,5 +1,4 @@
 import os
-import re
 import config
 import discord
 from dotenv import load_dotenv
@@ -21,7 +20,7 @@ class LokiClient(discord.Client):
         self.logging = logger
         self.short_interest_scraper = ShortInterest()
         self.news_scraper = StockNews()
-        self.alpha_vantage = AlphaVantage()
+        self.alpha_vantage = AlphaVantage(os.getenv('ALPHA_VANTAGE_TOKEN'), os.getenv('REQUESTS_INTERVAL_MILLIS'))
         self.hti = Html2Image()
         super(LokiClient, self).__init__()
 
@@ -74,60 +73,69 @@ class LokiClient(discord.Client):
                 self.logging.exception(f"Exception while scraping news: {e}")
                 await message.channel.send(Usage.Default)
 
-        # CHANGE TO USE REGULAR EXPRESSIONS TO MATCH THIS
-        # each command should match and if it does then call that command
-
         # Interact with the AlphaVantage API
         if msg.startswith('-alpha'):
             args = msg[7:]
             try:
                 if Regex.AlphaQuote.match(args):
-                    data = self.alpha_vantage.getQuote(args[1]) 
+                    data = self.alpha_vantage.getQuote(args.split(' ')[1]) 
                 elif Regex.AlphaEarnings.match(args):
-                    data = self.alpha_vantage.getEarnings(args[1])
+                    data = self.alpha_vantage.getEarnings(args.split(' ')[1])
                 elif Regex.AlphaIPO.match(args):
                     data = self.alpha_vantage.getUpcomingIPOs()
                 elif Regex.AlphaFXRate.match(args):
-                    #
-                    data = self.alpha_vantage.getFXRate(args[1], args[2])
+                    flags = args.split(' ')
+                    data = self.alpha_vantage.getFXRate(flags[1], flags[2])
                 elif Regex.AlphaCryptoRating.match(args):
-                    #
-                    data = self.alpha_vantage.getCryptoRating(args[1])
+                    data = self.alpha_vantage.getCryptoRating(args.split(' ')[1])
                 elif Regex.AlphaGDP.match(args):
-                    annual = True if args[1] in ("a", "annual") else False
-                    asof = args[2] if len(args) == 3 else None
-                    data = self.alpha_vantage.getRealGDP(annual, asof)
+                    flags = args.split(' ')
+                    kwargs = (flags[1], flags[2]) if len(flags) == 3 else (flags[1])
+                    data = self.alpha_vantage.getRealGDP(*kwargs)
                 elif Regex.AlphaGDPPerCapita.match(args):
-                    #
-                    data = self.alpha_vantage.getRealGDPPerCapita(args[1])
+                    flags = args.split(' ')
+                    kwargs = (flags[1],) if len(flags) == 2 else ()
+                    data = self.alpha_vantage.getRealGDPPerCapita(*kwargs)
                 elif Regex.AlphaTreasuryYield.match(args):
-                    #
-                    data = self.alpha_vantage.getTreasuryYield(args[1])
+                    flags = args.split(' ')
+                    kwargs = (flags[1],) if len(flags) == 2 else ()
+                    data = self.alpha_vantage.getTreasuryYield(*kwargs)
                 elif Regex.AlphaFedRate.match(args):
-                    #
-                    data = self.alpha_vantage.getFederalFundsRate(args[1])
+                    flags = args.split(' ')
+                    kwargs = (flags[1],) if len(flags) == 2 else ()
+                    data = self.alpha_vantage.getFederalFundsRate(*kwargs)
                 elif Regex.AlphaCPI.match(args):
-                    #
-                    data = self.alpha_vantage.getConsumerPriceIndex(args[1])
+                    flags = args.split(' ')
+                    kwargs = (flags[1],) if len(flags) == 2 else ()
+                    data = self.alpha_vantage.getConsumerPriceIndex(*kwargs)
                 elif Regex.AlphaInflation.match(args):
-                    #
-                    data = self.alpha_vantage.getInflation(args[1])
+                    flags = args.split(' ')
+                    kwargs = (flags[1],) if len(flags) == 2 else ()
+                    data = self.alpha_vantage.getInflation(*kwargs)
                 elif Regex.AlphaInflationExpectation.match(args):
-                    #
-                    data = self.alpha_vantage.getInflationExpectation(args[1])
+                    flags = args.split(' ')
+                    kwargs = (flags[1],) if len(flags) == 2 else ()
+                    data = self.alpha_vantage.getInflationExpectation(*kwargs)
                 elif Regex.AlphaDurableGoods.match(args):
-                    #
-                    data = self.alpha_vantage.getDurableGoods(args[1])
+                    flags = args.split(' ')
+                    kwargs = (flags[1],) if len(flags) == 2 else ()
+                    data = self.alpha_vantage.getDurableGoods(*kwargs)
                 elif Regex.AlphaUnemployment.match(args):
-                    #
-                    data = self.alpha_vantage.getNonfarmPayroll(args[1])
+                    flags = args.split(' ')
+                    kwargs = (flags[1],) if len(flags) == 2 else ()
+                    data = self.alpha_vantage.getUnemployment(*kwargs)
                 elif Regex.AlphaNonfarmPayroll.match(args):
-                    #
-                    data = self.alpha_vantage.getNonfarmPayroll(args[1])
+                    flags = args.split(' ')
+                    kwargs = (flags[1],) if len(flags) == 2 else ()
+                    data = self.alpha_vantage.getNonfarmPayroll(*kwargs)
+                else:
+                    data = "I believe you misstyped something... try again!"
                 await message.channel.send(data)
             except (IndexError, EmptyHTTPResponseException) as e:
+                print(e)
                 await message.channel.send(Usage.AlphaVantage)
             except Exception as e:
+                print(e)
                 await message.channel.send(Usage.Default)
               
         # Ignore
