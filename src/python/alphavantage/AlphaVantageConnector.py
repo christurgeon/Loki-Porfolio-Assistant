@@ -4,10 +4,10 @@ if __name__ == "__main__" and __package__ is None:
 
 
 import config
-import csv
 import pandas as pd
 from pandas.core.frame import DataFrame
 from io import BytesIO
+import matplotlib.pyplot as plt
 
 from utils.LokiLogger import Logger
 from utils.RequestsHelper import getRequestWrapper
@@ -23,49 +23,52 @@ class AlphaVantage:
         self.logging = Logger.getLogger(__name__)
 
 
-    def getQuote(self, symbol: str):
+    def getQuote(self, symbol: str) -> DataFrame:
         params = {
               "function" : "GLOBAL_QUOTE"
             , "symbol"   : symbol 
             , "apikey"   : self.api_key
+            , "datatype" : "csv"
         }
         msg = f"getQuote() failed for symbol {symbol}"
         response = getRequestWrapper(logging=self.logging, url=self.base_url, params=params, msg=msg)
-        data = response.json()
-        if data and not data["Global Quote"]: 
+        df = pd.read_csv(BytesIO(response.content))
+        if df is None or len(df.index) == 0:
             raise EmptyHTTPResponseException("getQuote() returned empty, please validate request")
-        return response.json()
+        if "Error Message" in df.iloc[0][0]:
+            raise EmptyHTTPResponseException("getQuote() invalid API call, please validate request")
+        return df
 
 
-    def getEarnings(self, symbol: str):
+    def getEarnings(self, symbol: str) -> DataFrame:
         params = {
               "function" : "EARNINGS_CALENDAR"
             , "symbol"   : symbol 
             , "apikey"   : self.api_key
+            , "datatype" : "csv"
         }
         msg = f"getEarnings() failed for symbol {symbol}"
         response = getRequestWrapper(logging=self.logging, url=self.base_url, params=params, msg=msg)
-        content = response.content.decode('utf-8')
-        reader = csv.reader(content.splitlines(), delimiter=",")
-        data = [row for row in reader]
-        if len(data) == 1:
+        df = pd.read_csv(BytesIO(response.content))
+        if df is None or len(df.index) == 0:
             raise EmptyHTTPResponseException(f"getEarnings() returned empty for {symbol}, please validate request")
-        return data
+        return df
 
 
-    def getUpcomingIPOs(self):
+    def getUpcomingIPOs(self) -> DataFrame:
         params = { 
               "function" : "IPO_CALENDAR"
-            , "apikey" : self.api_key 
+            , "apikey"   : self.api_key 
         }
         msg = "getUpcomingIPOs() failed to fetch IPOs"
         response = getRequestWrapper(logging=self.logging, url=self.base_url, params=params, msg=msg)
-        content = response.content.decode('utf-8')
-        reader = csv.reader(content.splitlines(), delimiter=",")
-        return [row for row in reader]
+        df = pd.read_csv(BytesIO(response.content))
+        if df is None or len(df.index) == 0:
+            raise EmptyHTTPResponseException("getUpcomingIPOs() returned empty, please validate request")
+        return df
 
 
-    def getFXRate(self, from_ccy: str, to_ccy: str):
+    def getFXRate(self, from_ccy: str, to_ccy: str) -> DataFrame:
         params = {
               "function"        : "CURRENCY_EXCHANGE_RATE"
             , "from_currency"   : from_ccy 
@@ -75,23 +78,26 @@ class AlphaVantage:
         msg = f"getFXRate() failed to fetch conversion from {from_ccy} to {to_ccy}"
         response = getRequestWrapper(logging=self.logging, url=self.base_url, params=params, msg=msg)
         data = response.json()
-        if "Error Message" in data:
+        data = data.get("Realtime Currency Exchange Rate", None)
+        if data is None:
             raise EmptyHTTPResponseException(f"getFXRate() errored for {from_ccy} to {to_ccy} rate, please validate request")
-        return data
+        return DataFrame.from_dict(data, orient="index")
 
 
-    def getCryptoRating(self, symbol: str):
+    def getCryptoRating(self, symbol: str) -> DataFrame:
         params = { 
               "function" : "CRYPTO_RATING"
             , "symbol"   : symbol
             , "apikey"   : self.api_key 
+            , "datatype" : "csv"
         }
         msg = f"cryptoRating() failed for symbol {symbol}"
         response = getRequestWrapper(logging=self.logging, url=self.base_url, params=params, msg=msg)
         data = response.json()
-        if not data:
+        data = data.get("Crypto Rating (FCAS)", None)
+        if data is None:
             raise EmptyHTTPResponseException(f"getCryptoRating() returned empty for {symbol}, please validate request")
-        return data
+        return DataFrame.from_dict(data, orient="index")
         
     
     def alphaVantageAPIHelper(self, function: str, msg: str, extra_params: list = [], filter_lambda=None) -> DataFrame:
@@ -191,14 +197,17 @@ class AlphaVantage:
         return self.alphaVantageAPIHelper("NONFARM_PAYROLL", msg=msg, filter_lambda=f)
 
 
+    def graphData(self, df: DataFrame):
+        fig = df.plot(x="timestamp", figsize=(15, 5), grid=True)
+        plt.xlabel("Date")
+        plt.xticks(rotation=65)
+        plt.subplots_adjust(bottom=0.25)
+        return fig.get_figure()
 
-    def graphData(self, data) -> DataFrame:
-        # have an option to pass in the json data and graph it then return the png/jpg
-        pass
+        
 
 
 
-from time import sleep
 import os
 import sys
 from pathlib import Path
@@ -209,9 +218,12 @@ if __name__ == "__main__":
     token = os.getenv('ALPHA_VANTAGE_TOKEN')
     a = AlphaVantage(token, 15000)
 
-    # print(a.getQuote("aapl"))
+    df = a.getNonfarmPayroll()
+    print(df)
+    g = a.graphData(df)
+    g.savefig("figure.pdf")
     # sleep(2)
     # print(a.getQuote("1234"))
 
     print("\n\n\n")
-    print(a.getRealGDP(True, "2020"))
+    # print(a.getRealGDP(True, "2020"))

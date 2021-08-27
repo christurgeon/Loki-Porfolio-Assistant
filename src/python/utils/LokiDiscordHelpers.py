@@ -20,7 +20,7 @@ class Usage:
 
 class Files:
     ShortInterest = "shortinterest.jpg"
-
+    AlphaVantage  = "alphavantage.jpg"
 
 class Regex:
 

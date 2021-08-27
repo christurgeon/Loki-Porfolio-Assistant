@@ -129,13 +129,15 @@ class LokiClient(discord.Client):
                     kwargs = (flags[1],) if len(flags) == 2 else ()
                     data = self.alpha_vantage.getNonfarmPayroll(*kwargs)
                 else:
-                    data = "I believe you misstyped something... try again!"
-                await message.channel.send(data)
+                    await message.channel.send("I believe you misstyped something... try again!")
+                    return 
+                css = "body {background: white;}"
+                self.hti.screenshot(html_str=data.to_html(), css_str=css, save_as=Files.AlphaVantage, size=(600, 40*size))  
+                await message.channel.send(file=discord.File(Files.AlphaVantage))
             except (IndexError, EmptyHTTPResponseException) as e:
-                print(e)
-                await message.channel.send(Usage.AlphaVantage)
+                await message.channel.send(f"Please validate the command! {Usage.AlphaVantage}")
             except Exception as e:
-                print(e)
+                self.logging.exception(f"Invalid comment, caught exception {e}")
                 await message.channel.send(Usage.Default)
               
         # Ignore
