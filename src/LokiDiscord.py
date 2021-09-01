@@ -37,7 +37,7 @@ class LokiClient(discord.Client):
             await message.channel.send('Hello!')
 
         # Handle query for short interest for a number of stocks
-        if msg.startswith('-short'):
+        elif msg.startswith('-short'):
             args = msg[7:].split(" ")
             if len(args) != 2 or args[0] not in ("low", "high"):
                 await message.channel.send(Usage.ShortInterest)
@@ -58,7 +58,7 @@ class LokiClient(discord.Client):
                 await message.channel.send(Usage.Default)
 
         # Provide news articles for a given ticker
-        if msg.startswith('-news'):
+        elif msg.startswith('-news'):
             args = msg[6:].split(" ")
             if len(args) != 1:
                 await message.channel.send(Usage.News)
@@ -74,7 +74,7 @@ class LokiClient(discord.Client):
                 await message.channel.send(Usage.Default)
 
         # Interact with the AlphaVantage API
-        if msg.startswith('-alpha'):
+        elif msg.startswith('-alpha'):
             args = msg[7:]
             try:
                 if Regex.AlphaQuote.match(args):
@@ -139,7 +139,16 @@ class LokiClient(discord.Client):
             except Exception as e:
                 self.logging.exception(f"Invalid comment, caught exception {e}")
                 await message.channel.send(Usage.Default)
-              
+
+        # Interact with the FinancialModelingPrep API    
+        elif message.startswith("-fmp"):
+            args = msg[7:]
+            try:
+                pass
+            except Exception as e: 
+                self.logging.exception(f"Invalid comment, caught exception {e}")
+                await message.channel.send(Usage.Default)
+
         # Ignore
         else:
             return

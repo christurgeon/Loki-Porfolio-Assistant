@@ -10,7 +10,7 @@ __pycache__/
 *$py.class
 
 # Ignore the log file
-src/python/logs 
+src/logs 
 
 # Ignore the .env file with Discord token
-src/python/config.env
+src/config.env

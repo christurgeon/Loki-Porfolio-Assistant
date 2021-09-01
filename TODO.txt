@@ -1,10 +1,8 @@
 SOON:
 
 1. COMPLETE
-2. ensure all alphavantage data can be sent to chat (plaintext/img) 
-3. add alphavantage graph displaying
-
-3.5 Look into financialmodelingprep.com
+2. ensure all alphavantage data can be sent to chat (plaintext/img) add alphavantage graph displaying
+3. financialmodelingprep
 
 4. finish Ark scraper / integrate it
 5. scrape twitter tweets (see whats already built)

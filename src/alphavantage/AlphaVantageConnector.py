@@ -1,8 +1,3 @@
-if __name__ == "__main__" and __package__ is None:
-    from os import sys, path
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-
-
 import config
 import pandas as pd
 from pandas.core.frame import DataFrame
@@ -203,27 +198,3 @@ class AlphaVantage:
         plt.xticks(rotation=65)
         plt.subplots_adjust(bottom=0.25)
         return fig.get_figure()
-
-        
-
-
-
-import os
-import sys
-from pathlib import Path
-from dotenv import load_dotenv
-
-if __name__ == "__main__":
-    load_dotenv(Path("../config.env"))
-    token = os.getenv('ALPHA_VANTAGE_TOKEN')
-    a = AlphaVantage(token, 15000)
-
-    df = a.getNonfarmPayroll()
-    print(df)
-    g = a.graphData(df)
-    g.savefig("figure.pdf")
-    # sleep(2)
-    # print(a.getQuote("1234"))
-
-    print("\n\n\n")
-    # print(a.getRealGDP(True, "2020"))
