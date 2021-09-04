@@ -5,6 +5,7 @@ FROM ubuntu-python3
 RUN python3 -m pip install -U discord.py \ 
                               python-dotenv \
                               html2image \
+                              html5lib \
                               alpaca-trade-api \
                               beautifulsoup4 \ 
                               pandas

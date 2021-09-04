@@ -13,4 +13,10 @@ __pycache__/
 src/logs 
 
 # Ignore the .env file with Discord token
-src/config.env
+*.env
+
+# Ignore the generated config file
+*.cfg
+
+# Ignore the temp filder for temp files
+temp/

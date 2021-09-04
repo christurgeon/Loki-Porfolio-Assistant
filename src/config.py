@@ -23,6 +23,7 @@ if not os.path.exists(filepath):
         "arkw"          : "https://ark-funds.com/wp-content/fundsiteliterature/csv/ARK_NEXT_GENERATION_INTERNET_ETF_ARKW_HOLDINGS.csv",
         "arkg"          : "https://ark-funds.com/wp-content/fundsiteliterature/csv/ARK_GENOMIC_REVOLUTION_MULTISECTOR_ETF_ARKG_HOLDINGS.csv",
         "arkf"          : "https://ark-funds.com/wp-content/fundsiteliterature/csv/ARK_FINTECH_INNOVATION_ETF_ARKF_HOLDINGS.csv",
+        "ark_purchases" : "https://cathiesark.com/{}/trades",
         "lowfloat"      : "https://www.lowfloat.com/",
         "highfloat"     : "https://www.highshortinterest.com/",
         "marketwatch"   : "https://marketwatch.com/investing/stock/",
