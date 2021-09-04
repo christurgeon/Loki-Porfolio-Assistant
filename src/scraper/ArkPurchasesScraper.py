@@ -36,7 +36,7 @@ class ArkFundTracker:
         return self.parse(url)
 
 
-    def getFundRecentPurchases(self, fundname: str) -> DataFrame:
+    def getFundRecentPurchases(self, fundname: str, limit: int = 25) -> DataFrame:
         msg = f"getFundRecentPurchases() failed for fund {fundname}"
         if fundname not in self.funds_dict:
             raise InvalidInputException("ARK fund {} not recognized!") 

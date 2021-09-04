@@ -1,10 +1,10 @@
 SOON:
 
 1. COMPLETE
-2. ensure all alphavantage data can be sent to chat (plaintext/img) add alphavantage graph displaying
-3. financialmodelingprep
+2. CLOSE ensure all alphavantage data can be sent to chat (plaintext/img) add alphavantage graph displaying
+3. CLOSE financialmodelingprep
 
-4. finish Ark scraper / integrate it
+4. IN PROGRESS finish Ark scraper limit for purchases, then add html screenshot of it, maybe red/green background for buy sell
 5. scrape twitter tweets (see whats already built)
 6. reddit scrape / parse data (see whats already built)
 

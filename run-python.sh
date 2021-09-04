@@ -1,5 +1,5 @@
 #!/bin/bash
 
-cd src/python
+cd src
 
 python3 LokiDiscord.py

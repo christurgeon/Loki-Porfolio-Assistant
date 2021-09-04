@@ -1,7 +1,8 @@
 import re
+from enum import Enum
 
 
-class Usage:
+class Usage(Enum):
     Overview = r"""
     Loki is an investment assitant bot designed to provide you
     configurable updates as well as requested information on 
@@ -15,14 +16,20 @@ class Usage:
     """
     ShortInterest = "-short <low/high> <number_of_stocks>"
     AlphaVantage  = "TODO"
+    Ark           = "TODO"
     Default       = "Sorry! I couldn't complete that command... something went wrong :("
 
 
-class Files:
+class Files(Enum):
     ShortInterest = "shortinterest.jpg"
     AlphaVantage  = "alphavantage.jpg"
 
-class Regex:
+
+class Regex(Enum):
+
+  ###################################
+  # AlphaVantage                    # 
+  ###################################
 
   # i.e. <q/quote AAPL>
   AlphaQuote                  = re.compile(r"^\s*(q|quote)\s+[a-zA-Z]+$", re.IGNORECASE)
@@ -54,3 +61,12 @@ class Regex:
   AlphaUnemployment           = re.compile(r"^\s*unemployment(\s+\d{8}|\s+\d{4}-\d{2}-\d{2}|\s*)$", re.IGNORECASE)
   # i.e. <nonfarmpayroll asof*>
   AlphaNonfarmPayroll         = re.compile(r"^\s*nonfarmpayroll(\s+\d{8}|\s+\d{4}-\d{2}-\d{2}|\s*)$", re.IGNORECASE)
+
+  ###################################
+  # ArkInvest                       # 
+  ###################################
+
+  # i.e. <h/holdings ARKK>
+  ArkHoldings                 = re.compile(r"^\s*(h|holdings)\s+[a-zA-Z]+$", re.IGNORECASE)
+  # i.e. <p/purchases ARKK top*>
+  ArkPurchases                = re.compile(r"^\s*(p|purchases)\s+[a-zA-Z]+(\s+\d+|\s*)$", re.IGNORECASE)
