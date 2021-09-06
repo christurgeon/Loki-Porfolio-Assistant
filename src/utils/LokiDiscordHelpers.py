@@ -1,8 +1,7 @@
 import re
-from enum import Enum
 
 
-class Usage(Enum):
+class Usage:
     Overview = r"""
     Loki is an investment assitant bot designed to provide you
     configurable updates as well as requested information on 
@@ -20,12 +19,13 @@ class Usage(Enum):
     Default       = "Sorry! I couldn't complete that command... something went wrong :("
 
 
-class Files(Enum):
-    ShortInterest = "shortinterest.jpg"
-    AlphaVantage  = "alphavantage.jpg"
+class Files:
+    ShortInterest     = "shortinterest.jpg"
+    AlphaVantageCsv   = "alphavantage.csv"
+    AlphaVantageJpeg  = "alphavantage.jpg"
 
 
-class Regex(Enum):
+class Regex:
 
   ###################################
   # AlphaVantage                    # 

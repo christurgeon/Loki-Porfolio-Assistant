@@ -49,7 +49,7 @@ class LokiClient(discord.Client):
                 else:
                     await message.channel.send(Usage.ShortInterest)
                     return
-                css = "body {background: white;}"
+                css = r"body {background: white;} {background-color: #BFBFBF;}"
                 self.hti.screenshot(html_str=data, css_str=css, save_as=Files.ShortInterest, size=(600, 40*size))  
                 await message.channel.send(config.lowfloat if args[0] == "low" else config.highfloat)
                 await message.channel.send(file=discord.File(Files.ShortInterest))
@@ -131,13 +131,20 @@ class LokiClient(discord.Client):
                 else:
                     await message.channel.send("I believe you misstyped something... try again!")
                     return 
-                css = "body {background: white;}"
-                self.hti.screenshot(html_str=data.to_html(), css_str=css, save_as=Files.AlphaVantage, size=(600, 40*len(data.index)))  
-                await message.channel.send(file=discord.File(Files.AlphaVantage))
+                # Need a way to determine whether to send as HTML or CSV file, right now assuming number of rows...
+                if len(data) <= 5:       
+                    html = data.to_html(index=False)
+                    if len(html) < 2000:
+                        css = r"table {width: 100%;} body {background: white;} th {text-align: center;} td {text-align: center;} tr:nth-child(even) {background-color: #BFBFBF;}"
+                        self.hti.screenshot(html_str=html, css_str=css, save_as=Files.AlphaVantageJpeg)  
+                        await message.channel.send(file=discord.File(Files.AlphaVantageJpeg))
+                        return
+                data.to_csv(Files.AlphaVantageCsv, index=False)
+                await message.channel.send(file=discord.File(Files.AlphaVantageCsv))
             except (IndexError, EmptyHTTPResponseException) as e:
                 await message.channel.send(f"Please validate the command! Usage: {Usage.AlphaVantage}")
             except Exception as e:
-                self.logging.exception(f"Invalid comment, caught exception {e}")
+                self.logging.exception(f"Caught unexpected exception {e}")
                 await message.channel.send(Usage.Default)
 
         # Interact with the FinancialModelingPrep API    
@@ -193,8 +200,11 @@ if __name__ == "__main__":
     load_dotenv(Path("./config.env"))
     logging = Logger.getLogger("Discord")
     try:
-        client = LokiClient(logging)
-        client.run(os.getenv("DISCORD_TOKEN"))
+        a = AlphaVantage(os.getenv("ALPHA_VANTAGE_TOKEN"), os.getenv("REQUESTS_INTERVAL_MILLIS"))
+        _ = a.getFXRate("JPY", "USD")
+        # client = LokiClient(logging)
+        # client.run(os.getenv("DISCORD_TOKEN"))
+        print(a.getCryptoRating("btc"))
         sys.exit(0)
     except Exception as e:
         logging.error(f"LokiClient failed with: {e}")

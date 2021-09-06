@@ -1,3 +1,4 @@
+import re
 import config
 import pandas as pd
 from pandas.core.frame import DataFrame
@@ -75,8 +76,11 @@ class AlphaVantage:
         data = response.json()
         data = data.get("Realtime Currency Exchange Rate", None)
         if data is None:
+            print(response.text)
             raise EmptyHTTPResponseException(f"getFXRate() errored for {from_ccy} to {to_ccy} rate, please validate request")
-        return DataFrame.from_dict(data, orient="index")
+        df = DataFrame.from_dict(data, orient="index").reset_index()
+        df[df.columns[0]] = df[df.columns[0]].apply(lambda x: re.sub("\d+\.\s", "", x))
+        return df
 
 
     def getCryptoRating(self, symbol: str) -> DataFrame:
@@ -92,7 +96,9 @@ class AlphaVantage:
         data = data.get("Crypto Rating (FCAS)", None)
         if data is None:
             raise EmptyHTTPResponseException(f"getCryptoRating() returned empty for {symbol}, please validate request")
-        return DataFrame.from_dict(data, orient="index")
+        df = DataFrame.from_dict(data, orient="index").reset_index()
+        df[df.columns[0]] = df[df.columns[0]].apply(lambda x: re.sub("\d+\.\s", "", x))
+        return df
         
     
     def alphaVantageAPIHelper(self, function: str, msg: str, extra_params: list = [], filter_lambda=None) -> DataFrame:
