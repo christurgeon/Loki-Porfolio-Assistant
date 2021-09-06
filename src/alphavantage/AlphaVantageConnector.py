@@ -61,6 +61,7 @@ class AlphaVantage:
         df = pd.read_csv(BytesIO(response.content))
         if df is None or len(df.index) == 0:
             raise EmptyHTTPResponseException("getUpcomingIPOs() returned empty, please validate request")
+        df[df.columns[1]] = df[df.columns[1]].apply(lambda x: x[:46] + "..." if len(x) > 47 else x) # column: name
         return df
 
 
@@ -80,6 +81,10 @@ class AlphaVantage:
             raise EmptyHTTPResponseException(f"getFXRate() errored for {from_ccy} to {to_ccy} rate, please validate request")
         df = DataFrame.from_dict(data, orient="index").reset_index()
         df[df.columns[0]] = df[df.columns[0]].apply(lambda x: re.sub("\d+\.\s", "", x))
+        df = df.T
+        df.columns = df.iloc[0]
+        df.reset_index(drop=True, inplace=True)
+        df.drop(labels=0, axis=0, inplace=True)
         return df
 
 
@@ -88,11 +93,11 @@ class AlphaVantage:
               "function" : "CRYPTO_RATING"
             , "symbol"   : symbol
             , "apikey"   : self.api_key 
-            , "datatype" : "csv"
         }
         msg = f"cryptoRating() failed for symbol {symbol}"
         response = getRequestWrapper(logging=self.logging, url=self.base_url, params=params, msg=msg)
         data = response.json()
+        # CHECK THIS ONE, NOT RETURNING ANYTHING FOR SOME REASON 
         data = data.get("Crypto Rating (FCAS)", None)
         if data is None:
             raise EmptyHTTPResponseException(f"getCryptoRating() returned empty for {symbol}, please validate request")

@@ -1,7 +1,7 @@
 SOON:
 
 1. COMPLETE
-2. CLOSE ensure all alphavantage data can be sent to chat (plaintext/img) add alphavantage graph displaying
+2. CLOSE ensure all alphavantage data can be sent to chat (plaintext/img) add alphavantage graph displaying (limit 5 requests per minute using dequeu)
 3. CLOSE financialmodelingprep
 
 4. IN PROGRESS finish Ark scraper limit for purchases, then add html screenshot of it, maybe red/green background for buy sell

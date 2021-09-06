@@ -8,6 +8,7 @@ RUN python3 -m pip install -U discord.py \
                               html5lib \
                               alpaca-trade-api \
                               beautifulsoup4 \ 
+                              tweepy \
                               pandas
 
 ########################################################

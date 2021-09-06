@@ -201,10 +201,10 @@ if __name__ == "__main__":
     logging = Logger.getLogger("Discord")
     try:
         a = AlphaVantage(os.getenv("ALPHA_VANTAGE_TOKEN"), os.getenv("REQUESTS_INTERVAL_MILLIS"))
-        _ = a.getFXRate("JPY", "USD")
+        # _ = a.getFXRate("JPY", "USD")
         # client = LokiClient(logging)
         # client.run(os.getenv("DISCORD_TOKEN"))
-        print(a.getCryptoRating("btc"))
+        print(a.getRealGDP(True, "2019-01-07"))
         sys.exit(0)
     except Exception as e:
         logging.error(f"LokiClient failed with: {e}")
