@@ -18,5 +18,7 @@ src/logs
 # Ignore the generated config file
 *.cfg
 
-# Ignore the temp filder for temp files
+# Ignore the temp filder for temp files as well as generated files
 temp/
+*.csv
+*.jpg

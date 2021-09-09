@@ -11,8 +11,14 @@ RUN python3 -m pip install -U discord.py \
                               tweepy \
                               pandas
 
-########################################################
+# Add script 
+ADD LokiDiscord.py /
 
-# Ensure everything is building properly and have the entrypoint start the two script
+# Commands to run the application
+CMD ["python3", "./src/LokiDiscord.py"]
 
+# docker build -t loki-bot .
+# docker run loki-bot
 
+# docker ps -a
+# docker rmi <image_id>
