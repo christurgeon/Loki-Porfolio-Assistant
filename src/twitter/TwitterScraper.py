@@ -22,7 +22,7 @@ class Twitter:
         auth.set_access_token(access_token, access_secret)
         return tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
-    def __parseHelper(self, tweets):
+    def __parseHelper(self, tweets) -> DataFrame:
         rowbuilder = dict.fromkeys(["Tweet", "Date", "Likes", "Retweets"])
         df = DataFrame(columns=rowbuilder.keys())
         for tweet in tweets:

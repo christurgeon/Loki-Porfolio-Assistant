@@ -1,22 +1,26 @@
 import re
 
+from twitter.TwitterScraper import Twitter
+
 
 class Usage:
     Overview = r"""
-    Loki is an investment assitant bot designed to provide you
+    Loki is an investment assistant bot designed to provide you
     configurable updates as well as requested information on 
     the markets at anytime.
 
     -short <low/high> <number_of_stocks>
       | Retrieve a list of stocks at a specified size 
-      | woth the highest or lowest daily short interest 
+      | with the highest or lowest daily short interest 
     
     - 
     """
-    ShortInterest = "-short <low/high> <number_of_stocks>"
-    AlphaVantage  = "TODO"
-    Ark           = "TODO"
-    Default       = "Sorry! I couldn't complete that command... something went wrong :("
+    ShortInterest         = "-short <low/high> <number_of_stocks>"
+    AlphaVantage          = "TODO"
+    Ark                   = "TODO"
+    FinancialModelingPrep = "TODO"
+    Twitter               = "TODO"
+    Default               = "Sorry! I couldn't complete that command... something went wrong :("
 
 
 class Files:
@@ -70,3 +74,12 @@ class Regex:
   ArkHoldings                 = re.compile(r"^\s*(h|holdings)\s+[a-zA-Z]+$", re.IGNORECASE)
   # i.e. <p/purchases ARKK top*>
   ArkPurchases                = re.compile(r"^\s*(p|purchases)\s+[a-zA-Z]+(\s+\d+|\s*)$", re.IGNORECASE)
+
+  ###################################
+  # Twitter                         # 
+  ###################################
+
+  # i.e. <q/query count*>
+  TweetsWithSymbol            = re.compile(r"^\s*(q|query)\s+\d*$", re.IGNORECASE)
+  # i.e. <u/user count*>
+  TweetsFromUser              = re.compile(r"^\s*(u|user)\s+\d*$", re.IGNORECASE)

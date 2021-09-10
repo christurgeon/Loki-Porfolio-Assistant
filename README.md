@@ -27,6 +27,6 @@ TWITTER_ACCESS_SECRET=xxxxxxxxx
 
 
 ## Build
-We are currently still in a development phase, but if you are interested in picking up where we are currently. You can simply run the ```run-python.sh``` script to get the bot up and running. Currently supported functinality includes requesting news articles, retreiving high and low short interest stocks, and requesting data from AlphaVantage. 
+We are currently still in a development phase, but if you are interested in picking up where we are currently. You can simply run the ```LokiDiscord.py``` script to get the bot up and running. Currently supported functinality includes requesting news articles, retreiving high and low short interest stocks, and requesting data from AlphaVantage. 
 
 Have a look at our ```TODO.txt``` file to see the next features to be implemented.

@@ -11,6 +11,7 @@ from alphavantage.AlphaVantageConnector import AlphaVantage
 from scraper.ArkPurchasesScraper import ArkFundTracker
 from scraper.ShortInterestScraper import ShortInterest
 from scraper.StockNewsScraper import StockNews
+from twitter.TwitterScraper import Twitter
 from utils.Exceptions import EmptyHTTPResponseException
 from utils.LokiDiscordHelpers import Usage, Files, Regex
 from utils.LokiLogger import Logger
@@ -19,12 +20,13 @@ from utils.LokiLogger import Logger
 class LokiClient(discord.Client):
     
     def __init__(self, logger):
-        self.logging = logger
+        self.logging                = logger
         self.short_interest_scraper = ShortInterest()
-        self.news_scraper = StockNews()
-        self.alpha_vantage = AlphaVantage(os.getenv("ALPHA_VANTAGE_TOKEN"), os.getenv("REQUESTS_INTERVAL_MILLIS"))
-        self.ark = ArkFundTracker()
-        self.hti = Html2Image()
+        self.news_scraper           = StockNews()
+        self.alpha_vantage          = AlphaVantage(os.getenv("ALPHA_VANTAGE_TOKEN"), os.getenv("REQUESTS_INTERVAL_MILLIS"))
+        self.twitter                = Twitter(os.getenv("TWITTER_CONSUMER_KEY"), os.getenv("TWITTER_CONSUMER_SECRET"), os.getenv("TWITTER_ACCESS_TOKEN"), os.getenv("TWITTER_ACCESS_SECRET"))
+        self.ark                    = ArkFundTracker()
+        self.hti                    = Html2Image()
         super(LokiClient, self).__init__()
 
     async def on_ready(self):
@@ -168,8 +170,28 @@ class LokiClient(discord.Client):
                     flags = args.split(" ")
                     kwargs = (flags[1], flags[2]) if len(flags) == 2 else (flags[1],)
                     data = self.ark.getFundRecentPurchases(*kwargs) 
+                print(data)
             except (IndexError, EmptyHTTPResponseException) as e:
                 await message.channel.send(f"Please validate the command! Usage: {Usage.Ark}")
+            except Exception as e:
+                self.logging.exception(f"Invalid comment, caught exception {e}")
+                await message.channel.send(Usage.Default)
+
+        # Provide tweets for requested queries or from profiles of interest
+        elif message.startswith("-twitter"):
+            try:
+                args = msg[9:]
+                flags = args.split(" ")
+                if Regex.TweetsWithSymbol.match(args):
+                    kwargs = (flags[1], flags[2]) if len(flags) == 2 else (flags[1],)
+                    data = self.twitter.searchTweetsWithSymbol(*kwargs) 
+                elif Regex.TweetsFromUser.match(args):
+                    kwargs = (flags[1], flags[2]) if len(flags) == 2 else (flags[1],)
+                    data = self.twitter.latestTweetsFromUser(*kwargs) 
+                else:
+                    await message.channel.send("I believe you misstyped something... try again!")
+                    return 
+                print(data)
             except Exception as e:
                 self.logging.exception(f"Invalid comment, caught exception {e}")
                 await message.channel.send(Usage.Default)
