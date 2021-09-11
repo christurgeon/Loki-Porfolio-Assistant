@@ -9,6 +9,7 @@ from html2image import Html2Image
 
 from alphavantage.AlphaVantageConnector import AlphaVantage
 from scraper.ArkPurchasesScraper import ArkFundTracker
+from finmodelingprep.FinModelPrepConnector import FinancialModelingPrep
 from scraper.ShortInterestScraper import ShortInterest
 from scraper.StockNewsScraper import StockNews
 from twitter.TwitterScraper import Twitter
@@ -25,6 +26,7 @@ class LokiClient(discord.Client):
         self.news_scraper           = StockNews()
         self.alpha_vantage          = AlphaVantage(os.getenv("ALPHA_VANTAGE_TOKEN"), os.getenv("REQUESTS_INTERVAL_MILLIS"))
         self.twitter                = Twitter(os.getenv("TWITTER_CONSUMER_KEY"), os.getenv("TWITTER_CONSUMER_SECRET"), os.getenv("TWITTER_ACCESS_TOKEN"), os.getenv("TWITTER_ACCESS_SECRET"))
+        self.fmp                    = FinancialModelingPrep(os.getenv("FINANCIAL_MODELING_PREP_TOKEN"))
         self.ark                    = ArkFundTracker()
         self.hti                    = Html2Image()
         super(LokiClient, self).__init__()
@@ -153,6 +155,19 @@ class LokiClient(discord.Client):
         elif message.startswith("-fmp"):
             try:
                 args = msg[7:]
+                if Regex.FmpCompanyProfile.match(args):
+                    pass
+                elif Regex.FmpQuote.match(args):
+                    pass
+                elif Regex.FmpCompanyRating.match(args):
+                    pass
+                elif Regex.FmpStockSplits.match(args):
+                    pass
+                elif Regex.FmpStockGrade.match(args):
+                    pass
+                else:
+                    await message.channel.send("I believe you misstyped something... try again!")
+                    return 
                 pass
             except (IndexError, EmptyHTTPResponseException) as e:
                 await message.channel.send(f"Please validate the command! Usage: {Usage.FinancialModelingPrep}")
@@ -219,6 +234,7 @@ class LokiClient(discord.Client):
 
 
 if __name__ == "__main__":
+    FinancialModelingPrepTest = False
     load_dotenv(Path("./config.env"))
     logging = Logger.getLogger("Discord")
     try:
@@ -227,6 +243,16 @@ if __name__ == "__main__":
         # client = LokiClient(logging)
         # client.run(os.getenv("DISCORD_TOKEN"))
         print(a.getRealGDP(True, "2019-01-07"))
+
+
+        if FinancialModelingPrepTest:
+            fmp = FinancialModelingPrep(os.getenv("FINANCIAL_MODELING_PREP_TOKEN"))
+            print(fmp.getCompanyProfile("AAPL"))
+            # print(fmp.getQuote("AAPL"))
+            # print(fmp.getCompanyRating("AAPL", 1))
+            # print(fmp.getStockSplits("AAPL"))
+            # print(fmp.getInsiderTrading("AAPL", 50))
+            # print(fmp.getStockGrade("AAPL", 50))
         sys.exit(0)
     except Exception as e:
         logging.error(f"LokiClient failed with: {e}")

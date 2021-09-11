@@ -30,7 +30,7 @@ class FinancialModelingPrep:
 
 
     # https://financialmodelingprep.com/developer/docs/companies-rating-free-api
-    def getCompanyRating(self, symbol: str, limit: str = "1"):
+    def getCompanyRating(self, symbol: str, limit: int = 1):
         url = self.base_url_v3 + f"/historical-rating/{symbol}"
         params = { "apikey" : self.api_key, "limit" : limit }
         msg = f"getCompanyRating() failed for symbol {symbol}"
@@ -48,7 +48,7 @@ class FinancialModelingPrep:
 
 
     # https://financialmodelingprep.com/developer/docs/stock-insider-trading
-    def getInsiderTrading(self, symbol: str, limit: str = "50"):
+    def getInsiderTrading(self, symbol: str, limit: int = 50):
         url = self.base_url_v4 + f"/insider-trading/{symbol}"
         params = { "apikey" : self.api_key, "limit" : limit }
         msg = f"getInsiderTrading() failed for symbol {symbol}"
@@ -57,7 +57,7 @@ class FinancialModelingPrep:
 
 
     # https://financialmodelingprep.com/developer/docs/stock-grade
-    def getStockGrade(self,  symbol: str, limit: str = "50"):
+    def getStockGrade(self,  symbol: str, limit: int = 50):
         url = self.base_url_v4 + f"/grade/{symbol}"
         params = { "apikey" : self.api_key, "limit" : limit }
         msg = f"getStockGrade() failed for symbol {symbol}"

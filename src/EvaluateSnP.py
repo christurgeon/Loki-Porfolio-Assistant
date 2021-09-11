@@ -39,16 +39,16 @@ def getSP500():
     @goal   | retrieve list of all S&P 500 tickers
     @return | a list of all S&P 500 tickers, can throw exception
     """
-    logger.info("getSP500() start retrieving S&P 500 list")
+    print("getSP500() start retrieving S&P 500 list")
     tickers = []
     resp = requests.get(url=SP_URL)
     if resp.status_code != 200:
-        logger.error("getSP500() could not reach {} response.status_code = {}".format(resp.url, resp.status_code))
+        print("getSP500() could not reach {} response.status_code = {}".format(resp.url, resp.status_code))
     soup = BeautifulSoup(resp.text, "lxml")
     table = soup.find("table", {"class" : "wikitable sortable"})
     for row in table.findAll("tr")[1:]:
         tickers.append(row.findAll("td")[0].text.strip())
-    logger.info(tickers)
+    print(tickers)
     if len(tickers) < 500:
         logging.error("Expected number of tickers not retrieved from {}".format(SP_URL))
         raise Exception("Unable to retrieve S&P 500 ticker list...")
@@ -63,53 +63,52 @@ def download(sess, tickers):
     @param  | tickers - list of all S&P 500 tickers
     @return | 0 if successful, -1 otherwise, can throw exception
     """
-    logger.info("download() start retrieving S&P 500 data")
+    print("download() start retrieving S&P 500 data")
     spdata = []
     for i, t in enumerate(tickers):
         try:
             resp = sess.get(url=YAHOO_URL.format(ticker=t), headers=YAHOO_HEADER)
-            logger.info("{}\t{}\t\t| response.status_code = {}".format(i, t, resp.status_code))
+            print("{}\t{}\t\t| response.status_code = {}".format(i, t, resp.status_code))
             spdata.append(resp.text)
         except Exception as e:
-            logger.exception("download() exception occurred for {}: [{}]".format(t, e))
+            print("download() exception occurred for {}: [{}]".format(t, e))
     with open(SPDATA_FILE, "w") as file:
-        logger.info("download() start writing data to spdata.txt")
+        print("download() start writing data to spdata.txt")
         for i in spdata:
             file.write(i)
     return 0
 
 
 
-def evaluate(tickers):
+def evaluate(watchlist):
     """
     @goal   | score each S&P 500 company
     @param  | tickers, list of S&P 500 tickers
     @return | 0 if successful, -1 otherwise, can throw exception
     """
-    spdict = {k: None for k in tickers}
-
+    spdict = dict.fromkeys(tickers)
     with open(SPDATA_FILE, "r") as file:
         while True:
             line = file.readline()
             if not line:
-                logging.info("Finished reading file...")
+                print("Finished reading file...")
                 return 0
             spdata = json.loads(line)
 
-            pegRatio = s["defaultKeyStatistics"]["pegRatio"]["raw"]
-            earningsQuarterlyGrowth = s["defaultKeyStatistics"]["earningsQuarterlyGrowth"]["raw"]
-            profitMargins = s["defaultKeyStatistics"]["profitMargins"]["raw"]
-            f2WeekChange = s["defaultKeyStatistics"]["52WeekChange"]["raw"]
-            priceToBook = s["defaultKeyStatistics"]["priceToBook"]["raw"]
-            forwardEps = s["defaultKeyStatistics"]["forwardEps"]["raw"]
-            trailingEps = s["defaultKeyStatistics"]["trailingEps"]["raw"]
-            forwardPE = s["defaultKeyStatistics"]["forwardPE"]["raw"]
-            # sector = s["summaryProfile"]["sector"]
+            pegRatio = spdata["defaultKeyStatistics"]["pegRatio"]["raw"]
+            earningsQuarterlyGrowth = spdata["defaultKeyStatistics"]["earningsQuarterlyGrowth"]["raw"]
+            profitMargins = spdata["defaultKeyStatistics"]["profitMargins"]["raw"]
+            f2WeekChange = spdata["defaultKeyStatistics"]["52WeekChange"]["raw"]
+            priceToBook = spdata["defaultKeyStatistics"]["priceToBook"]["raw"]
+            forwardEps = spdata["defaultKeyStatistics"]["forwardEps"]["raw"]
+            trailingEps = spdata["defaultKeyStatistics"]["trailingEps"]["raw"]
+            forwardPE = spdata["defaultKeyStatistics"]["forwardPE"]["raw"]
+            # sector = spdata["summaryProfile"]["sector"]
 
             profitable = pegRatio > 0 and earningsQuarterlyGrowth > 0 and profitMargins > .1 #and sector != "Financial Services"
             if profitable:
-                print(s["symbol"])
-                spdict[s["symbol"]] = [s]
+                print(spdata["symbol"])
+                spdict[spdata["symbol"]] = [spdata]
 
             # Highly profitable but is also down
             profitable = earningsQuarterlyGrowth > 0 and f2WeekChange < -0.1
@@ -133,15 +132,15 @@ def evaluate(tickers):
 
 
             # Sort by forwardPE and rank each company
-            spdict[s["symbol"]].append(forwardPE)
+            spdict[spdata["symbol"]].append(forwardPE)
             # Sort by PEGratio and rank each company
-            spdict[s["symbol"]].append(pegRatio)
+            spdict[spdata["symbol"]].append(pegRatio)
             # Sort by 52WeekChange and rank each company
-            spdict[s["symbol"]].append(f2WeekChange)
+            spdict[spdata["symbol"]].append(f2WeekChange)
             # Sort by priceToBook and rank each company
-            spdict[s["symbol"]].append(priceToBook)
+            spdict[spdata["symbol"]].append(priceToBook)
             # Sort by earningsQuarterlyGrowth and rank each company
-            spdict[s["symbol"]].append(earningsQuarterlyGrowth)
+            spdict[spdata["symbol"]].append(earningsQuarterlyGrowth)
 
             # Sum all of these up to give the total score for the ticker, then sort all by total value
 
@@ -151,16 +150,6 @@ def evaluate(tickers):
 
 
 if __name__ == "__main__":
-    log_file_name = os.path.join(LOGPATH, LOGFILE_NAME)
-    logging.basicConfig(level=logging.INFO,
-                        format="%(asctime)s %(levelname)-8s %(message)s",
-                        datefmt="%m-%d %H:%M:%S")
-    handler = logging.handlers.TimedRotatingFileHandler(log_file_name, when="d", interval=1, backupCount=5)
-    formatter = logging.Formatter("%(asctime)s[%(levelname)-8s]%(message)s")
-    handler.setFormatter(formatter)
-    logging.getLogger("").addHandler(handler)
-    logging.info("========================================")
-    logging.info("START")
     rc = -1
     with requests.Session() as sess:
         try:
@@ -168,8 +157,6 @@ if __name__ == "__main__":
             # ret = download(sess, tickers)
             # logging.info("download() COMPLETE with ret = {}".format(ret))
             rc = evaluate(tickers)
-            logging.info("evaluate() COMPLETE with ret = {}".format(rc))
+            print("evaluate() COMPLETE with ret = {}".format(rc))
         except Exception as e:
             logger.error("Exception: {}".format(e))
-    logging.info("END rc = {}".format(rc))
-    sys.exit(rc)
