@@ -1,18 +1,18 @@
 SOON:
 
-1. COMPLETE
-2. CLOSE ensure all alphavantage data can be sent to chat (plaintext/img) add alphavantage graph displaying (limit 5 requests per minute using dequeu)
-3. CLOSE financialmodelingprep
+- proxies from list dont always work, revisit this, try parsing from somewhere else maybe
+- CLOSE ensure all alphavantage data can be sent to chat (plaintext/img) add alphavantage graph displaying (limit 5 requests per minute using dequeu)
+- CLOSE financialmodelingprep
 
-4. IN PROGRESS finish Ark scraper limit for purchases, then add html screenshot of it, maybe red/green background for buy sell
-5. scrape twitter tweets (see whats already built)
-6. reddit scrape / parse data (see whats already built)
+- IN PROGRESS finish Ark scraper limit for purchases, then add html screenshot of it, maybe red/green background for buy sell
+- reddit scrape / parse data (see whats already built)
 
-7. YahooFinance hookup, other APIs
-8. SnP analysis, get script to work
+- YahooFinance hookup, other APIs
+- SnP analysis, get script to work
 
 
 LATER:
 
 1. add cooldown to avoid spam / same requests
 2. add alpaca watchlist, enable trades
+3. twitter sentiment analysis

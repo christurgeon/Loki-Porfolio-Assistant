@@ -18,16 +18,17 @@ if not os.path.exists(filepath):
         "logpath"       : r"{}".format(os.path.join(up(filepath), "logs")),
     }
     config["urls"] = {
-        "arkk"          : "https://ark-funds.com/wp-content/fundsiteliterature/csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv",
-        "arkq"          : "https://ark-funds.com/wp-content/fundsiteliterature/csv/ARK_AUTONOMOUS_TECHNOLOGY_&_ROBOTICS_ETF_ARKQ_HOLDINGS.csv",
-        "arkw"          : "https://ark-funds.com/wp-content/fundsiteliterature/csv/ARK_NEXT_GENERATION_INTERNET_ETF_ARKW_HOLDINGS.csv",
-        "arkg"          : "https://ark-funds.com/wp-content/fundsiteliterature/csv/ARK_GENOMIC_REVOLUTION_MULTISECTOR_ETF_ARKG_HOLDINGS.csv",
-        "arkf"          : "https://ark-funds.com/wp-content/fundsiteliterature/csv/ARK_FINTECH_INNOVATION_ETF_ARKF_HOLDINGS.csv",
-        "ark_purchases" : "https://cathiesark.com/{}/trades",
-        "lowfloat"      : "https://www.lowfloat.com/",
-        "highfloat"     : "https://www.highshortinterest.com/",
-        "marketwatch"   : "https://marketwatch.com/investing/stock/",
-        "alphavantage"  : "https://www.alphavantage.co/query?"
+        "arkk"              : "https://ark-funds.com/wp-content/fundsiteliterature/csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv",
+        "arkq"              : "https://ark-funds.com/wp-content/fundsiteliterature/csv/ARK_AUTONOMOUS_TECHNOLOGY_&_ROBOTICS_ETF_ARKQ_HOLDINGS.csv",
+        "arkw"              : "https://ark-funds.com/wp-content/fundsiteliterature/csv/ARK_NEXT_GENERATION_INTERNET_ETF_ARKW_HOLDINGS.csv",
+        "arkg"              : "https://ark-funds.com/wp-content/fundsiteliterature/csv/ARK_GENOMIC_REVOLUTION_MULTISECTOR_ETF_ARKG_HOLDINGS.csv",
+        "arkf"              : "https://ark-funds.com/wp-content/fundsiteliterature/csv/ARK_FINTECH_INNOVATION_ETF_ARKF_HOLDINGS.csv",
+        "ark_purchases"     : "https://cathiesark.com/{}/trades",
+        "lowfloat"          : "https://www.lowfloat.com/",
+        "highfloat"         : "https://www.highshortinterest.com/",
+        "marketwatch"       : "https://marketwatch.com/investing/stock/",
+        "alphavantage"      : "https://www.alphavantage.co/query?",
+        "futures"           : "https://www.investing.com/indices/indices-futures",
     }
     with open(filepath, "w") as fout:
         config.write(fout)

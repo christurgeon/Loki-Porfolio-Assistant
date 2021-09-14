@@ -16,6 +16,7 @@ from twitter.TwitterScraper import Twitter
 from utils.Exceptions import EmptyHTTPResponseException
 from utils.LokiDiscordHelpers import Usage, Files, Regex
 from utils.LokiLogger import Logger
+from utils.RequestsHelper import configureProxies
 
 
 class LokiClient(discord.Client):
@@ -30,6 +31,7 @@ class LokiClient(discord.Client):
         self.ark                    = ArkFundTracker()
         self.hti                    = Html2Image()
         super(LokiClient, self).__init__()
+        configureProxies()
 
     async def on_ready(self):
         self.logging.info(f"We have logged in as {self.user}")
@@ -206,7 +208,8 @@ class LokiClient(discord.Client):
                 else:
                     await message.channel.send("I believe you misstyped something... try again!")
                     return 
-                print(data)
+                for tweet in Twitter.prettyFormatTweets(data):
+                    await message.channel.send(tweet)
             except Exception as e:
                 self.logging.exception(f"Invalid comment, caught exception {e}")
                 await message.channel.send(Usage.Default)

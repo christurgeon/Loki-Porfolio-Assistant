@@ -4,7 +4,6 @@ if __name__ == "__main__" and __package__ is None:
 
 
 from pandas.core.frame import DataFrame
-import re
 import tweepy
 import pandas as pd
 # from textblob import TextBlob
@@ -26,10 +25,13 @@ class Twitter:
         rowbuilder = dict.fromkeys(["Tweet", "Date", "Likes", "Retweets"])
         df = DataFrame(columns=rowbuilder.keys())
         for tweet in tweets:
-            rowbuilder["Tweet"]     = tweet.text
-            rowbuilder["Date"]      = tweet.created_at
-            rowbuilder["Likes"]     = tweet.favorite_count
-            rowbuilder["Retweets"]  = tweet.retweet_count
+            try:
+                rowbuilder["Tweet"] = tweet.retweeted_status.full_text
+            except AttributeError:
+                rowbuilder["Tweet"] = tweet.full_text
+            rowbuilder["Date"] = tweet.created_at
+            rowbuilder["Likes"] = tweet.favorite_count
+            rowbuilder["Retweets"] = tweet.retweet_count
             df = df.append(rowbuilder, ignore_index=True)
         return df
 
@@ -47,10 +49,22 @@ class Twitter:
     #         return -1
 
     def latestTweetsFromUser(self, account_name: str, count: int) -> DataFrame:
-        return self.__parseHelper(self.api.user_timeline(screen_name=account_name, count=count))
+        return self.__parseHelper(self.api.user_timeline(screen_name=account_name, count=count, tweet_mode="extended"))
         
     def searchTweetsWithSymbol(self, symbol: str, count: int) -> DataFrame: 
-        return self.__parseHelper(self.api.search(q=symbol, count=count))
+        return self.__parseHelper(self.api.search(q=symbol, count=count, tweet_mode="extended"))
+
+    @staticmethod
+    def prettyFormatTweets(tweets: DataFrame):
+        formatted_tweets = []
+        for tweet in tweets.iterrows():
+            series = tweet[1]
+            text = series.Tweet
+            date = series.Date 
+            likes = series.Likes 
+            retweets = series.Retweets
+            formatted_tweets.append(f"Tweet from *{date}*: *{text}*\n{likes} likes, {retweets} retweets")
+        return formatted_tweets
 
 
 
@@ -64,5 +78,9 @@ if __name__ == "__main__":
     tkk, taa = os.getenv("TWITTER_ACCESS_TOKEN"), os.getenv("TWITTER_ACCESS_SECRET")
     T = Twitter(tk, ta, tkk, taa)
     # T.searchTweetsWithStockSymbol("#aapl", 5)
-    print(T.latestTweetsFromUser("visualsofchris", 5))
+    a = T.latestTweetsFromUser("visualsofchris", 1)
+    print(a)
 
+    b = Twitter.prettyFormatTweets(a)
+    for i in b: 
+        print(b)
