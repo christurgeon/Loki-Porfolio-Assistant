@@ -10,6 +10,7 @@ from html2image import Html2Image
 from alphavantage.AlphaVantageConnector import AlphaVantage
 from scraper.ArkPurchasesScraper import ArkFundTracker
 from finmodelingprep.FinModelPrepConnector import FinancialModelingPrep
+from scraper.FuturesScraper import Futures
 from scraper.ShortInterestScraper import ShortInterest
 from scraper.StockNewsScraper import StockNews
 from twitter.TwitterScraper import Twitter
@@ -28,10 +29,11 @@ class LokiClient(discord.Client):
         self.alpha_vantage          = AlphaVantage(os.getenv("ALPHA_VANTAGE_TOKEN"), os.getenv("REQUESTS_INTERVAL_MILLIS"))
         self.twitter                = Twitter(os.getenv("TWITTER_CONSUMER_KEY"), os.getenv("TWITTER_CONSUMER_SECRET"), os.getenv("TWITTER_ACCESS_TOKEN"), os.getenv("TWITTER_ACCESS_SECRET"))
         self.fmp                    = FinancialModelingPrep(os.getenv("FINANCIAL_MODELING_PREP_TOKEN"))
+        self.futures                = Futures()
         self.ark                    = ArkFundTracker()
         self.hti                    = Html2Image()
         super(LokiClient, self).__init__()
-        configureProxies()
+        # configureProxies() revisit
 
     async def on_ready(self):
         self.logging.info(f"We have logged in as {self.user}")
@@ -154,7 +156,7 @@ class LokiClient(discord.Client):
                 await message.channel.send(Usage.Default)
 
         # Interact with the FinancialModelingPrep API    
-        elif message.startswith("-fmp"):
+        elif msg.startswith("-fmp"):
             try:
                 args = msg[7:]
                 if Regex.FmpCompanyProfile.match(args):
@@ -178,7 +180,7 @@ class LokiClient(discord.Client):
                 await message.channel.send(Usage.Default)
 
         # Provide fund information from Cathie Wood's ARK Invest
-        elif message.startswith("-ark"):
+        elif msg.startswith("-ark"):
             try:
                 args = msg[5:]
                 if Regex.ArkHoldings.match(args):
@@ -194,8 +196,24 @@ class LokiClient(discord.Client):
                 self.logging.exception(f"Invalid comment, caught exception {e}")
                 await message.channel.send(Usage.Default)
 
+        # Provide the latest futures data
+        elif msg.startswith("-futures"):
+            try:
+                data = self.futures.getLatestFutures()
+                row_count = len(data.index)
+                html = data.to_html(index=False)
+                css = r"body {background: white;} th {text-align: center;} td {text-align: center;} tr:nth-child(even) {background-color: #BFBFBF;}"
+                self.hti.screenshot(html_str=html, css_str=css, save_as=Files.Futures, size=(800, 26*row_count))  
+                await message.channel.send(f"<{config.futures}>")
+                await message.channel.send(file=discord.File(Files.Futures))
+            except EmptyHTTPResponseException as e:
+                await message.channel.send(f"Please validate the command! Usage: {Usage.Futures}")
+            except Exception as e:
+                self.logging.exception(f"Invalid comment, caught exception {e}")
+                await message.channel.send(Usage.Default)
+
         # Provide tweets for requested queries or from profiles of interest
-        elif message.startswith("-twitter"):
+        elif msg.startswith("-twitter"):
             try:
                 args = msg[9:]
                 flags = args.split(" ")
@@ -241,11 +259,11 @@ if __name__ == "__main__":
     load_dotenv(Path("./config.env"))
     logging = Logger.getLogger("Discord")
     try:
-        a = AlphaVantage(os.getenv("ALPHA_VANTAGE_TOKEN"), os.getenv("REQUESTS_INTERVAL_MILLIS"))
+        # a = AlphaVantage(os.getenv("ALPHA_VANTAGE_TOKEN"), os.getenv("REQUESTS_INTERVAL_MILLIS"))
         # _ = a.getFXRate("JPY", "USD")
-        # client = LokiClient(logging)
-        # client.run(os.getenv("DISCORD_TOKEN"))
-        print(a.getRealGDP(True, "2019-01-07"))
+        client = LokiClient(logging)
+        client.run(os.getenv("DISCORD_TOKEN"))
+        # print(a.getRealGDP(True, "2019-01-07"))
 
 
         if FinancialModelingPrepTest:
@@ -256,7 +274,6 @@ if __name__ == "__main__":
             # print(fmp.getStockSplits("AAPL"))
             # print(fmp.getInsiderTrading("AAPL", 50))
             # print(fmp.getStockGrade("AAPL", 50))
-        sys.exit(0)
     except Exception as e:
         logging.error(f"LokiClient failed with: {e}")
         sys.exit(-1)

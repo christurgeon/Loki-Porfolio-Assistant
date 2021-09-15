@@ -19,6 +19,7 @@ class Usage:
     AlphaVantage          = "TODO"
     Ark                   = "TODO"
     FinancialModelingPrep = "TODO"
+    Futures               = "TODO"
     Twitter               = "TODO"
     Default               = "Sorry! I couldn't complete that command... something went wrong :("
 
@@ -27,6 +28,7 @@ class Files:
     ShortInterest     = "shortinterest.jpg"
     AlphaVantageCsv   = "alphavantage.csv"
     AlphaVantageJpeg  = "alphavantage.jpg"
+    Futures           = "futures.jpg"
 
 
 class Regex:
