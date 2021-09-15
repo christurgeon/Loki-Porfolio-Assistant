@@ -1,7 +1,5 @@
 import re
 
-from twitter.TwitterScraper import Twitter
-
 
 class Usage:
     Overview = r"""
@@ -78,10 +76,16 @@ class Regex:
   ArkPurchases                = re.compile(r"^\s*(p|purchases)\s+[a-zA-Z]+(\s+\d+|\s*)$", re.IGNORECASE)
 
   ###################################
+  # FinancialModelingPrep           # 
+  ###################################
+
+  ### TODO
+
+  ###################################
   # Twitter                         # 
   ###################################
 
   # i.e. <q/query count*>
-  TweetsWithSymbol            = re.compile(r"^\s*(q|query)\s+\d*$", re.IGNORECASE)
+  TweetsWithSymbol            = re.compile(r"^\s*(q|query)\s+\$[a-zA-Z]+(\s*|\s+\d*)$", re.IGNORECASE) 
   # i.e. <u/user count*>
-  TweetsFromUser              = re.compile(r"^\s*(u|user)\s+\d*$", re.IGNORECASE)
+  TweetsFromUser              = re.compile(r"^\s*(u|user)\s+[a-zA-Z0-9]+(\s*|\s+\d*)$", re.IGNORECASE)

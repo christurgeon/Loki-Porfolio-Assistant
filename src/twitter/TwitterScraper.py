@@ -48,10 +48,12 @@ class Twitter:
     #     else:
     #         return -1
 
-    def latestTweetsFromUser(self, account_name: str, count: int) -> DataFrame:
+    def latestTweetsFromUser(self, account_name: str, count: int = 5) -> DataFrame:
+        count = min(count, 25)
         return self.__parseHelper(self.api.user_timeline(screen_name=account_name, count=count, tweet_mode="extended"))
         
-    def searchTweetsWithSymbol(self, symbol: str, count: int) -> DataFrame: 
+    def searchTweetsWithSymbol(self, symbol: str, count: int = 5) -> DataFrame: 
+        count = min(count, 25)
         return self.__parseHelper(self.api.search(q=symbol, count=count, tweet_mode="extended"))
 
     @staticmethod
@@ -63,7 +65,7 @@ class Twitter:
             date = series.Date 
             likes = series.Likes 
             retweets = series.Retweets
-            formatted_tweets.append(f"Tweet from *{date}*: *{text}*\n{likes} likes, {retweets} retweets")
+            formatted_tweets.append(f"Tweet from *{date}*:\n**{text}**\n{likes} likes, {retweets} retweets")
         return formatted_tweets
 
 

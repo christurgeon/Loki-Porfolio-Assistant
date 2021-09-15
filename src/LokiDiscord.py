@@ -23,6 +23,7 @@ from utils.RequestsHelper import configureProxies
 class LokiClient(discord.Client):
     
     def __init__(self, logger):
+        # configureProxies() revisit
         self.logging                = logger
         self.short_interest_scraper = ShortInterest()
         self.news_scraper           = StockNews()
@@ -33,7 +34,6 @@ class LokiClient(discord.Client):
         self.ark                    = ArkFundTracker()
         self.hti                    = Html2Image()
         super(LokiClient, self).__init__()
-        # configureProxies() revisit
 
     async def on_ready(self):
         self.logging.info(f"We have logged in as {self.user}")
@@ -218,10 +218,10 @@ class LokiClient(discord.Client):
                 args = msg[9:]
                 flags = args.split(" ")
                 if Regex.TweetsWithSymbol.match(args):
-                    kwargs = (flags[1], flags[2]) if len(flags) == 2 else (flags[1],)
+                    kwargs = (flags[1], int(flags[2])) if len(flags) == 3 else (flags[1],)
                     data = self.twitter.searchTweetsWithSymbol(*kwargs) 
                 elif Regex.TweetsFromUser.match(args):
-                    kwargs = (flags[1], flags[2]) if len(flags) == 2 else (flags[1],)
+                    kwargs = (flags[1], int(flags[2])) if len(flags) == 3 else (flags[1],)
                     data = self.twitter.latestTweetsFromUser(*kwargs) 
                 else:
                     await message.channel.send("I believe you misstyped something... try again!")
