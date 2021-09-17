@@ -1,5 +1,6 @@
 SOON:
 
+- get return values for FMP working
 - proxies from list dont always work, revisit this, try parsing from somewhere else maybe
 - CLOSE ensure all alphavantage data can be sent to chat (plaintext/img) add alphavantage graph displaying (limit 5 requests per minute using dequeu)
 - CLOSE financialmodelingprep

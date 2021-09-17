@@ -65,7 +65,7 @@ class Twitter:
             date = series.Date 
             likes = series.Likes 
             retweets = series.Retweets
-            formatted_tweets.append(f"Tweet from *{date}*:\n**{text}**\n{likes} likes, {retweets} retweets")
+            formatted_tweets.append(f"Tweet from *{date}*: **{likes} likes, {retweets} retweets**\n```yaml\n{text}```")
         return formatted_tweets
 
 

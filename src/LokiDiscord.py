@@ -160,15 +160,23 @@ class LokiClient(discord.Client):
             try:
                 args = msg[7:]
                 if Regex.FmpCompanyProfile.match(args):
-                    pass
+                    data = self.fmp.getCompanyProfile(args.splits(" ")[1])
                 elif Regex.FmpQuote.match(args):
-                    pass
+                    data = self.fmp.getQuote(args.splits(" ")[1])
                 elif Regex.FmpCompanyRating.match(args):
-                    pass
+                    flags = args.splits(" ")
+                    kwargs = (flags[1],flags[2]) if len(flags) == 3 else (flags[1],)
+                    data = self.fmp.getCompanyRating(*kwargs)
                 elif Regex.FmpStockSplits.match(args):
-                    pass
+                    data = self.fmp.getStockSplits(args.splits(" ")[1])
+                elif Regex.FmpInsiderTrading.match(args):
+                    flags = args.splits(" ")
+                    kwargs = (flags[1],flags[2]) if len(flags) == 3 else (flags[1],)
+                    data = self.fmp.getInsiderTrading(*kwargs)
                 elif Regex.FmpStockGrade.match(args):
-                    pass
+                    flags = args.splits(" ")
+                    kwargs = (flags[1],flags[2]) if len(flags) == 3 else (flags[1],)
+                    data = self.fmp.getStockGrade(*kwargs)
                 else:
                     await message.channel.send("I believe you misstyped something... try again!")
                     return 

@@ -79,7 +79,18 @@ class Regex:
   # FinancialModelingPrep           # 
   ###################################
 
-  ### TODO
+  # i.e. <p/profile AAPL>
+  FmpCompanyProfile           = re.compile(r"^\s*(p|profile)\s+[a-zA-Z]+$", re.IGNORECASE)
+  # i.e. <q/quote AAPL>
+  FmpQuote                    = re.compile(r"^\s*(q|quote)\s+[a-zA-Z]+$", re.IGNORECASE)
+  # i.e. <r/rating AAPL count*>
+  FmpCompanyRating            = re.compile(r"^\s*(r|rating)\s+[a-zA-Z]+(\s*|\s+\d*)$", re.IGNORECASE)
+  # i.e. <s/splits AAPL>
+  FmpStockSplits              = re.compile(r"^\s*(s|splits)\s+[a-zA-Z]+$", re.IGNORECASE)
+  # i.e. <i/insider AAPL count*>
+  FmpInsiderTrading           = re.compile(r"^\s*(i|insider)\s+[a-zA-Z]+(\s*|\s+\d*)$", re.IGNORECASE)
+  # i.e. <r/rating AAPL count*>
+  FmpStockGrade               = re.compile(r"^\s*(g|grade)\s+[a-zA-Z]+(\s*|\s+\d*)$", re.IGNORECASE)
 
   ###################################
   # Twitter                         # 
