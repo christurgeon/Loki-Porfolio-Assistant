@@ -18,3 +18,4 @@ LATER:
 2. add alpaca watchlist, enable trades
 3. twitter sentiment analysis
 4. Add color for up/down values in HTML tables
+
